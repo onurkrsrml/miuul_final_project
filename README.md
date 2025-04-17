@@ -118,12 +118,12 @@ streamlit run streamlit_app.py
 
 ## 📸 Ekran Görüntüleri
 
-> <img src="/Users/onurkarasurmeli/Downloads/ROC AUC Eğrisi.png"/>
-> <img src="/Users/onurkarasurmeli/Desktop/Screenshot 2025-04-17 at 17.58.56.png"/>
-> <img src="/Users/onurkarasurmeli/Downloads/ROC AUC Eğrisi.png"/>
-> <img src="/Users/onurkarasurmeli/Downloads/Confusion Matrix Report XGBoost.png"/>
-> <img src="/Users/onurkarasurmeli/Downloads/Confusion Matrix Report LightGBM.png"/>
-> <img src="/Users/onurkarasurmeli/Downloads/Random Forest.png"/>
+> ![GİRİŞ](giriş.png)
+> ![ÖN TANIM](ön%20tanım.png)
+> ![ROC AUC Eğrisi](ROC_AUC_Eğrisi.png)
+> ![Confusion Matrix XGBoost](Confusion Matrix Report XGBoost.png)
+> ![Confusion Matrix LightGBM](Confusion Matrix Report LightGBM.png)
+> ![Random Forest](Random Forest.png)
 
 
 ---
