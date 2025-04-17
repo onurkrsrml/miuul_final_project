@@ -1,0 +1,17 @@
+# Büyük dosyalar için Git LFS kullanımı
+*.csv filter=lfs diff=lfs merge=lfs -text
+
+# Otomatik satır sonu ayarı (Windows/Linux uyumu)
+* text=auto
+
+# Python
+*.py linguist-language=Python
+
+# Jupyter Notebook
+*.ipynb linguist-language=Jupyter\ Notebook
+
+# Streamlit
+*.toml linguist-language=TOML
+
+# Dil istatistikleri Streamlit, Python ve Markdown üzerine odaklansın
+README.md linguist-documentation

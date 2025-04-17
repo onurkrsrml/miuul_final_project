@@ -1,0 +1,52 @@
+# Byte-compiled / temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoint
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# macOS / Linux / Windows sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# Streamlit cache
+.streamlit/
+
+# Output, logs, model weights
+logs/
+*.log
+*.pkl
+*.h5
+*.joblib
+
+# Data (isteğe göre)
+data/
+datasets/
+*.csv
+*.xlsx
+
+# Notebooks output
+*.out
+
+# Python virtual environment
+pip-selfcheck.json
+
+# MyPy
+.mypy_cache/
+
+# PyCharm
+.idea/
+
+# Kaggle veya Colab notebook config dosyaları
+kaggle.json
