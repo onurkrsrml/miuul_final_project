@@ -21,7 +21,7 @@ ENV/
 Thumbs.db
 
 # Streamlit cache
-.streamlit/
+#.streamlit/
 
 # Output, logs, model weights
 logs/
