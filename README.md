@@ -118,7 +118,13 @@ streamlit run streamlit_app.py
 
 ## 📸 Ekran Görüntüleri
 
-> _Aşağıda örnek Streamlit uygulama ekran görüntülerini ekleyebilirsiniz._
+> <img src="/Users/onurkarasurmeli/Downloads/ROC AUC Eğrisi.png"/>
+> <img src="/Users/onurkarasurmeli/Desktop/Screenshot 2025-04-17 at 17.58.56.png"/>
+> <img src="/Users/onurkarasurmeli/Downloads/ROC AUC Eğrisi.png"/>
+> <img src="/Users/onurkarasurmeli/Downloads/Confusion Matrix Report XGBoost.png"/>
+> <img src="/Users/onurkarasurmeli/Downloads/Confusion Matrix Report LightGBM.png"/>
+> <img src="/Users/onurkarasurmeli/Downloads/Random Forest.png"/>
+
 
 ---
 
