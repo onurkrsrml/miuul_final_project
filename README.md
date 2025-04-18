@@ -118,12 +118,12 @@ streamlit run streamlit_app.py
 
 ## 📸 Ekran Görüntüleri
 
-> ![GİRİŞ](images/giriş.png)
-> ![ÖN TANIM](images/ön_tanım.png)
-> ![ROC AUC Eğrisi](images/ROC_AUC_Eğrisi.png)
-> ![Confusion Matrix XGBoost](images/Confusion_Matrix_Report_XGBoost.png)
-> ![Confusion Matrix LightGBM](images/Confusion_Matrix_Report_LightGBM.png)
-> ![Random Forest](images/Random_Forest.png)
+> ![GİRİŞ](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/GİRİŞ.png)
+> ![ÖN TANIM](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/ön tanım.png)
+> ![ROC AUC Eğrisi](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/ROC AUC Eğrisi.png)
+> ![Confusion Matrix XGBoost](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/Confusion Matrix Report XGBoost.png)
+> ![Confusion Matrix LightGBM](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/Confusion Matrix Report LightGBM.png)
+> ![Random Forest](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/Random Forest.png)
 
 
 ---
