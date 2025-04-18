@@ -1,5 +1,17 @@
-# Paketleri yüklemek için requirements.txt dosyasını çalıştır
+# 1. Veri Seti Hikayesi ve Problem Tanımı
 #
+"""
+Veri Seti Hikayesi:
+Bu veri seti, finansal işlemler üzerinde sahtekarlık (fraud) tespitine yönelik bilgiler içermektedir.
+Amaç, işlemin sahte (fraud) olup olmadığını gösteren 'fraud_bool' değişkenini öngörecek bir model geliştirmektir.
+
+Problem Tanımı:
+Amaç; kullanıcıların işlemlerinin sahte olup olmadığını makine öğrenmesi modelleriyle tahmin edebilmektir.
+"""
+
+
+
+# Paketleri yüklemek için requirements.txt dosyasını çalıştır
 # !pip install -r requirements.txt
 
 
@@ -40,14 +52,47 @@ pd.set_option('display.width', 500)
 
 
 
-# Veri setini oku ve önizle
+
+
+# 2. Keşifçi Veri Analizi (EDA)
 #
+print("\n--- KEŞİFÇİ VERİ ANALİZİ ---\n")
+
+
+
+# Veri seti yükleme ve okutma işlemi
+#
+
 data = pd.read_csv("datasets/Base.csv")
 
-data.head()
-data.info()
-data.columns
-data.describe().T
+
+
+# Veri setine genel bakış ve hızlı önizleme
+#
+def check_df(dataframe, head=5):
+    print("##################### Shape #####################")
+    print(dataframe.shape)
+    print("##################### Types #####################")
+    print(dataframe.dtypes)
+    print("##################### Head #####################")
+    print(dataframe.head(head))
+    print("##################### Tail #####################")
+    print(dataframe.tail(head))
+    print("##################### NA #####################")
+    print(dataframe.isnull().sum())
+    print("##################### Descriptives #########")
+    print(dataframe.describe([0, 0.05, 0.50, 0.95, 0.99, 1]).T)
+
+check_df(data)
+
+
+
+# Hedef değişken dağılımı grafiği
+#
+print(data["fraud_bool"].value_counts())
+sns.countplot(x="fraud_bool", data=data)
+plt.title("Fraud Dağılımı")
+plt.show()
 
 
 
@@ -62,6 +107,19 @@ if len(data) > 50000:
 #
 numeric_cols = data.select_dtypes(include=['int64', 'float64']).columns
 categorical_cols = data.select_dtypes(include='object').columns
+
+
+# Eksik değer kontrolü
+#
+print("\nEksik Değerler:\n", data.isnull().sum())
+
+
+
+
+
+# 3. Veri Ön İşleme ve Özellik Mühendisliği
+#
+print("\n--- VERİ ÖN İŞLEME ve ÖZELLİK MÜHENDİSLİĞİ ---\n")
 
 
 
@@ -119,6 +177,14 @@ X_test_scaled = scaler.transform(X_test)
 
 
 
+
+
+# 4. Modelleme
+#
+print("\n--- MODELLEME ---\n")
+
+
+
 # Modeller
 #
 models = {
@@ -140,13 +206,10 @@ for name, model in models.items():
     model.fit(X_train_scaled, y_train)
     y_train_pred = model.predict(X_train_scaled)
     y_test_pred = model.predict(X_test_scaled)
-
     train_acc = accuracy_score(y_train, y_train_pred)
     test_acc = accuracy_score(y_test, y_test_pred)
-
     train_roc_auc = roc_auc_score(y_train, model.predict_proba(X_train_scaled)[:, 1])
     test_roc_auc = roc_auc_score(y_test, model.predict_proba(X_test_scaled)[:, 1])
-
     report = classification_report(y_test, y_test_pred, output_dict=True)
 
     results.append({
@@ -190,7 +253,6 @@ best_models = results_df.sort_values(by="Test ROC AUC", ascending=False).head(2)
 for name in best_models:
     model = models[name]
     y_pred = model.predict(X_test_scaled)
-
     cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(6, 4))
     sns.heatmap(cm, annot=True, fmt='d', cmap="Blues")
@@ -226,5 +288,26 @@ plt.close()
 
 
 
+
+
+# 5. Bulgular ve İş Önerileri
 #
+print("\n--- BULGULAR VE İŞ ÖNERİLERİ ---\n")
+
+
+# Bulgular ve öneriler
 #
+print("""
+- En başarılı model: {}
+- Model sonuçlarına göre, veri setinde dengesiz sınıflar SMOTE ile dengelendikten sonra modellerin başarısı önemli ölçüde arttı.
+- Özellik önem sıralamasında öne çıkan değişkenler: {}
+- İşlemlerde tespit edilen anomali örüntüleri daha ayrıntılı incelenmeli.
+- İş birimleriyle birlikte, yüksek riskli işlemler için ek doğrulama adımları uygulanabilir.
+""".format(
+    results_df.sort_values(by="Test ROC AUC", ascending=False).iloc[0]["Model"],
+    list(features)
+))
+
+
+
+

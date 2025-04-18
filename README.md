@@ -118,12 +118,12 @@ streamlit run streamlit_app.py
 
 ## 📸 Ekran Görüntüleri
 
-> ![GİRİŞ](giriş.png)
-> ![ÖN TANIM](ön%20tanım.png)
-> ![ROC AUC Eğrisi](ROC_AUC_Eğrisi.png)
-> ![Confusion Matrix XGBoost](Confusion Matrix Report XGBoost.png)
-> ![Confusion Matrix LightGBM](Confusion Matrix Report LightGBM.png)
-> ![Random Forest](Random Forest.png)
+> ![GİRİŞ](images/giriş.png)
+> ![ÖN TANIM](images/ön_tanım.png)
+> ![ROC AUC Eğrisi](images/ROC_AUC_Eğrisi.png)
+> ![Confusion Matrix XGBoost](images/Confusion_Matrix_Report_XGBoost.png)
+> ![Confusion Matrix LightGBM](images/Confusion_Matrix_Report_LightGBM.png)
+> ![Random Forest](images/Random_Forest.png)
 
 
 ---
