@@ -118,12 +118,12 @@ streamlit run streamlit_app.py
 
 ## 📸 Ekran Görüntüleri
 
-> ![GİRİŞ](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/GİRİŞ.png)
-> ![ÖN TANIM](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/ön tanım.png)
-> ![ROC AUC Eğrisi](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/ROC AUC Eğrisi.png)
-> ![Confusion Matrix XGBoost](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/Confusion Matrix Report XGBoost.png)
-> ![Confusion Matrix LightGBM](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/Confusion Matrix Report LightGBM.png)
-> ![Random Forest](/Users/onurkarasurmeli/PycharmProjects/MIUUL/miuul_final_project/images/Random Forest.png)
+> ![GİRİŞ] <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/images/Giris.png">
+> ![ÖN TANIM] <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/images/On%20Tanim.png">
+> ![ROC AUC Eğrisi] <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/images/ROC%20AUC%20Egrisi.png">
+> ![Confusion Matrix XGBoost] <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/images/Confusion%20Matrix%20Report%20XGBoost.png">
+> ![Confusion Matrix LightGBM] <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/images/Confusion%20Matrix%20Report%20LightGBM.png">
+> ![Random Forest] <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/images/Random%20Forest.png">
 
 
 ---
