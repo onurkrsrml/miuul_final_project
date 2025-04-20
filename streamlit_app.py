@@ -18,7 +18,7 @@ from imblearn.over_sampling import SMOTE
 from collections import Counter
 
 import warnings
-import os  # <-- EKLENDİ
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -34,27 +34,32 @@ page = st.sidebar.radio("Go to", [
 
 @st.cache_data
 def load_data():
-    # Dosyanın tam yolunu belirle, hata kontrolü ekle
-    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datasets", "Base.csv")
-    if not os.path.exists(csv_path):
-        st.error(f"Veri dosyası bulunamadı: {csv_path}\nLütfen 'datasets/Base.csv' dosyasının mevcut olduğundan emin olun.")
-        st.stop()
-    return pd.read_csv(csv_path)
+    for root, dirs, files in os.walk(os.path.dirname(os.path.abspath(__file__))):
+        for file in files:
+            if file.endswith(".csv"):
+                csv_path = os.path.join(root, file)
+                st.info(f"Veri dosyası otomatik yüklendi: {csv_path}")
+                return pd.read_csv(csv_path)
+    st.error("Proje dizininde yüklenebilecek bir .csv dosyası bulunamadı!")
+    st.stop()
 
-data = load_data()
+data2 = load_data()
+data2 = data2.copy()
+data2['customer_id'] = data2.index  # Tüm veri için customer_id ekle
 
-
-# 50000 gözlem örneklem alma (main.py ile aynı)
-if len(data) > 50000:
-    data = data.sample(n=50000, random_state=42)
-
-#
-data["customer_id"] = data.index
+# 50000 gözlem örneklem alma
+if len(data2) > 50000:
+    data = data2.sample(n=50000, random_state=42).copy()
+else:
+    data = data2.copy()
+data['customer_id'] = data.index  # Örneklem için customer_id ekle
 
 # Sütun adını karşı repo ile uyumlu hale getir
 if "fraud_bool" in data.columns and "fraud" not in data.columns:
     data = data.rename(columns={"fraud_bool": "fraud"})
 
+if "fraud_bool" in data2.columns and "fraud" not in data2.columns:
+    data2 = data2.rename(columns={"fraud_bool": "fraud"})
 
 def preprocess_data(df):
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
@@ -73,11 +78,9 @@ def preprocess_data(df):
     data_imputed = pd.concat([data_numeric_imputed, data_categorical_encoded], axis=1)
     return data_imputed, label_encoders
 
-
 data_imputed, label_encoders = preprocess_data(data)
 X = data_imputed.drop("fraud", axis=1)
 y = data_imputed["fraud"]
-
 numeric_data = data.select_dtypes(include=[np.number])
 
 if page == "Home":
@@ -342,18 +345,19 @@ elif page == "Fraud Detector":
 
 elif page == "Müşteri Kontrolü":
     st.title("Müşteri Bazında Fraud Kontrolü")
-    if "customer_id" not in data.columns:
+    if "customer_id" not in data2.columns:
         st.warning("Veri setinizde 'customer_id' kolonu yok. Bu özelliği kullanmak için müşteri ID'li veri gerekir.")
     else:
-        customer_ids = data["customer_id"].unique()
+        customer_ids = data2["customer_id"].unique()
         selected_id = st.selectbox("Müşteri Seçiniz", customer_ids)
-        customer_rows = data[data["customer_id"] == selected_id]
+        customer_rows = data2[data2["customer_id"] == selected_id]
 
         st.write(f"Seçilen müşteri: **{selected_id}**")
         st.write(f"Toplam işlem adedi: {len(customer_rows)}")
         st.write("İşlem detayları:")
         st.dataframe(customer_rows.head())
 
+        # Burada örneklem değil, yine eğitim için örneklem veri (data) ile modeli fit ediyoruz!
         smote = SMOTE(random_state=42)
         X_resampled, y_resampled = smote.fit_resample(X, y)
         X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
@@ -362,7 +366,12 @@ elif page == "Müşteri Kontrolü":
         rf = RandomForestClassifier(n_estimators=20, max_depth=3, random_state=42, n_jobs=-1)
         rf.fit(X_train_scaled, y_train)
 
-        X_cust = customer_rows[X.columns]
+        # Müşteri verisini preprocess et
+        cust_rows_proc, _ = preprocess_data(customer_rows)
+        model_features = list(X.columns)
+        X_cust = cust_rows_proc.reindex(columns=model_features, fill_value=0)
+        X_cust = X_cust[model_features]
+
         X_cust_scaled = scaler.transform(X_cust)
         preds = rf.predict(X_cust_scaled)
 
