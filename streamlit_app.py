@@ -38,7 +38,6 @@ def load_data():
         for file in files:
             if file.endswith(".csv"):
                 csv_path = os.path.join(root, file)
-                st.info(f"Veri dosyası otomatik yüklendi: {csv_path}")
                 return pd.read_csv(csv_path)
     st.error("Proje dizininde yüklenebilecek bir .csv dosyası bulunamadı!")
     st.stop()
