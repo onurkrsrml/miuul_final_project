@@ -103,7 +103,7 @@ if page == "Home":
             </div>
         </div>
         <div style="flex:1;display:flex;justify-content:center;">
-            <a href="https://miro.medium.com/v2/resize:fit:702/0*v1fw3tyazcWKu6XU" target="_blank">Görsele Git</a>
+            <img src="https://miro.medium.com/v2/resize:fit:702/0*v1fw3tyazcWKu6XU" alt="Kod Görseli" width="600">
         </div>
     </div>
     """, unsafe_allow_html=True)
