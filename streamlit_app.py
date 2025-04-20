@@ -18,6 +18,7 @@ from imblearn.over_sampling import SMOTE
 from collections import Counter
 
 import warnings
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -31,6 +32,11 @@ page = st.sidebar.radio("Go to", [
     "Müşteri Kontrolü"
 ])
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+data = pd.read_csv(os.path.join(BASE_DIR, "datasets", "Base.csv"))
+if not os.path.exists(os.path.join(BASE_DIR, "datasets", "Base.csv")):
+    st.error("Veri seti bulunamadı. Lütfen veri setini kontrol edin.")
+    st.stop()
 
 @st.cache_data
 def load_data():
