@@ -34,11 +34,14 @@ page = st.sidebar.radio("Go to", [
 
 @st.cache_data
 def load_data():
-    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datasets", "Base.csv")
-    if not os.path.exists(csv_path):
-        st.error(f"Veri dosyası bulunamadı: {csv_path}\nLütfen 'datasets/Base.csv' dosyasının mevcut olduğundan emin olun.")
-        st.stop()
-    return pd.read_csv(csv_path)
+    for root, dirs, files in os.walk(os.path.dirname(os.path.abspath(__file__))):
+        for file in files:
+            if file.endswith("Base.csv"):
+                csv_path = os.path.join(root, file)
+                st.info(f"Veri dosyası otomatik yüklendi: {csv_path}")
+                return pd.read_csv(csv_path)
+    st.error("Proje dizininde yüklenebilecek bir .csv dosyası bulunamadı!")
+    st.stop()
 
 data2 = load_data()
 data2 = data2.copy()
