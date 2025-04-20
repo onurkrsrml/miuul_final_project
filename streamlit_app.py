@@ -103,7 +103,7 @@ if page == "Home":
             </div>
         </div>
         <div style="flex:1;display:flex;justify-content:center;">
-            <img src="app_images/fraud_detection.jpg" alt="Fraud Detection Cycle" style="width:300px;height:auto;">
+            <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/app_images/fraud_detection.jpg" alt="Fraud Detection Cycle" style="width:300px;height:auto;">
         </div>
     </div>
     """, unsafe_allow_html=True)
