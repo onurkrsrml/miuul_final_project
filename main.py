@@ -1039,5 +1039,3 @@ except Exception as e:
 - İşlemlerde tespit edilen anomali örüntüleri daha ayrıntılı incelenmeli.
 - İş birimleriyle birlikte, yüksek riskli işlemler için ek doğrulama adımları uygulanabilir.
 """)
-
-data.head()
