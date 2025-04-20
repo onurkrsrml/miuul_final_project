@@ -60,7 +60,7 @@ python main.py
 - **SMOTE ile veri dengelenmesi:** Azınlık sınıfını çoğaltarak dengesiz veri sorununu çözer.
 - **Çoklu model eğitimi:** Lojistik Regresyon, KNN, Karar Ağacı, Random Forest, XGBoost, LightGBM.
 - **Performans raporları:** Doğruluk, ROC AUC, Precision, Recall, F1-score.
-- **En iyi modellerin confusion matrix ve classification report görselleştirmeleri.
+- **En iyi modeller:** confusion matrix ve classification report görselleştirmeleri.
 - **Özellik önem sıralaması:** Random Forest modeline göre en önemli 10 özellik.
 
 ### 2. Web Arayüzü (streamlit_app.py)
