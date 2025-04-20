@@ -31,10 +31,10 @@ logs/
 *.joblib
 
 # Data (isteğe göre)
-data/
-datasets/
-*.csv
-*.xlsx
+#data/
+#datasets/
+#*.csv
+#*.xlsx
 
 # Notebooks output
 *.out
