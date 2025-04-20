@@ -103,7 +103,7 @@ if page == "Home":
             </div>
         </div>
         <div style="flex:1;display:flex;justify-content:center;">
-            <img src="https://miro.medium.com/v2/resize:fit:702/0*v1fw3tyazcWKu6XU" alt="Kod Görseli" width="600">
+            <img src="app_images/fraud detection.jpg" alt="Fraud Detection Cycle" width="600">
         </div>
     </div>
     """, unsafe_allow_html=True)
