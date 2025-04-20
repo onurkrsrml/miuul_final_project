@@ -36,7 +36,7 @@ page = st.sidebar.radio("Go to", [
 def load_data():
     for root, dirs, files in os.walk(os.path.dirname(os.path.abspath(__file__))):
         for file in files:
-            if file.endswith(".csv") and file:
+            if file.endswith(".csv"):
                 csv_path = os.path.join(root, file)
                 st.info(f"Veri dosyası otomatik yüklendi: {csv_path}")
                 return pd.read_csv(csv_path)
