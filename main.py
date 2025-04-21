@@ -4,16 +4,16 @@
 print("\n--- VERİ SETİ HİKAYESİ VE PROBLEM TANIMI ---\n")
 
 print("""
-Proje: Bankacılık Dolandırıcılığı Tespiti
+Proje: 🏦 Banka Dolandırıcılık Tespiti (Fraud Detection) 
 
 Veri Seti Hikayesi: 
-SecureBank, 10 milyondan fazla müşterisiyle faaliyet gösteren büyük bir dijital bankadır. Son yıllarda artan
+10 milyondan fazla müşterisiyle faaliyet gösteren büyük bir dijital bankanın son yıllarda artan
 çevrimiçi işlem hacmiyle birlikte dolandırıcılık vakalarında da ciddi bir artış yaşanmıştır. Banka, bu durumu önlemek
 ve müşterilerini korumak adına kapsamlı bir makine öğrenmesi tabanlı dolandırıcılık tespit sistemi geliştirmek üzere
 veri bilimi ekibini görevlendirmiştir.
 
 Problem Tanımı: 
-SecureBank’in 6 aylık işlem geçmişini içeren anonimleştirilmiş bir veri seti oluşturulmuştur. Veri seti hem bireysel
+Bankanın 6 aylık işlem geçmişini içeren anonimleştirilmiş bir veri seti oluşturulmuştur. Veri seti hem bireysel
 hem de ticari müşterilere ait işlemleri kapsar. Amaç, bu işlemlerin hangilerinin dolandırıcılık içerdiğini tahmin eden
 bir model geliştirmektir.
 """)
@@ -141,6 +141,8 @@ from sklearn.cluster import KMeans
 from imblearn.over_sampling import SMOTE
 from collections import Counter
 from scipy import stats
+from sklearn.feature_selection import SelectFromModel
+from sklearn.preprocessing import StandardScaler
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -184,7 +186,7 @@ sns.countplot(x="fraud_bool", data=data)
 plt.title("Fraud Dağılımı")
 plt.show()
 
-# Büyük veri setleri için örneklemeyle hızlandır (Burada veri seti 1000000 satır olduğundan yalnıca 50000 satırını alıyoruz)
+# Örneklem al
 if len(data) > 50000:
     data = data.sample(n=50000, random_state=42)
 
@@ -317,7 +319,6 @@ if len(data_imputed) > 1000:
                 kmeans_df[col].fillna(kmeans_df[col].median(), inplace=True)
 
         # Veri ölçeklendirme
-        from sklearn.preprocessing import StandardScaler
         scaler = StandardScaler()
         kmeans_df_scaled = scaler.fit_transform(kmeans_df)
 
@@ -709,8 +710,7 @@ print(f"Veri temizleme öncesi sütun sayısı: {X_all.shape[1]}")
 print(f"Veri temizleme sonrası sütun sayısı: {X_reduced.shape[1]}")
 
 # 2. Özellik önem sıralaması için basit bir model eğit
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import SelectFromModel
+
 
 # Basit bir model oluştur
 feature_selector = RandomForestClassifier(n_estimators=10, max_depth=5, random_state=42)

@@ -1,14 +1,20 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 from imblearn.over_sampling import SMOTE
-
+from collections import Counter
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
@@ -170,6 +176,27 @@ elif page == "Model Training":
     models = {}
     model_params = {}
 
+    if st.sidebar.checkbox("Logistic Regression", value=True):
+        st.sidebar.markdown("**Logistic Regression Ayarları**")
+        lr_c = st.sidebar.slider("C (LR)", 0.01, 10.0, 1.0, 0.01)
+        lr_max_iter = st.sidebar.number_input("Max Iter (LR)", 100, 5000, 3000, 100)
+        models["Logistic Regression"] = LogisticRegression(
+            C=lr_c, max_iter=lr_max_iter, solver='saga', n_jobs=-1, random_state=42
+        )
+        model_params["Logistic Regression"] = {"C": lr_c, "max_iter": lr_max_iter}
+
+    if st.sidebar.checkbox("KNN", value=True):
+        st.sidebar.markdown("**KNN Ayarları**")
+        knn_k = st.sidebar.slider("n_neighbors", 1, 20, 5, 1)
+        models["KNN"] = KNeighborsClassifier(n_neighbors=knn_k, n_jobs=-1)
+        model_params["KNN"] = {"n_neighbors": knn_k}
+
+    if st.sidebar.checkbox("Decision Tree", value=True):
+        st.sidebar.markdown("**Decision Tree Ayarları**")
+        dt_max_depth = st.sidebar.slider("max_depth (DT)", 1, 20, 3, 1)
+        models["Decision Tree"] = DecisionTreeClassifier(max_depth=dt_max_depth, random_state=42)
+        model_params["Decision Tree"] = {"max_depth": dt_max_depth}
+
     if st.sidebar.checkbox("Random Forest", value=True):
         st.sidebar.markdown("**Random Forest Ayarları**")
         rf_estimators = st.sidebar.slider("n_estimators (RF)", 10, 200, 20, 10)
@@ -179,6 +206,31 @@ elif page == "Model Training":
         )
         model_params["Random Forest"] = {"n_estimators": rf_estimators, "max_depth": rf_max_depth}
 
+    if st.sidebar.checkbox("XGBoost", value=True):
+        st.sidebar.markdown("**XGBoost Ayarları**")
+        xgb_estimators = st.sidebar.slider("n_estimators (XGB)", 10, 200, 20, 10)
+        xgb_max_depth = st.sidebar.slider("max_depth (XGB)", 1, 20, 3, 1)
+        xgb_learning_rate = st.sidebar.slider("learning_rate (XGB)", 0.01, 0.5, 0.1, 0.01)
+        models["XGBoost"] = XGBClassifier(
+            n_estimators=xgb_estimators, max_depth=xgb_max_depth, learning_rate=xgb_learning_rate,
+            random_state=42, verbosity=0, n_jobs=-1, use_label_encoder=False
+        )
+        model_params["XGBoost"] = {
+            "n_estimators": xgb_estimators, "max_depth": xgb_max_depth, "learning_rate": xgb_learning_rate
+        }
+
+    if st.sidebar.checkbox("LightGBM", value=True):
+        st.sidebar.markdown("**LightGBM Ayarları**")
+        lgbm_estimators = st.sidebar.slider("n_estimators (LGBM)", 10, 200, 20, 10)
+        lgbm_max_depth = st.sidebar.slider("max_depth (LGBM)", 1, 20, 3, 1)
+        lgbm_learning_rate = st.sidebar.slider("learning_rate (LGBM)", 0.01, 0.5, 0.1, 0.01)
+        models["LightGBM"] = LGBMClassifier(
+            n_estimators=lgbm_estimators, max_depth=lgbm_max_depth, learning_rate=lgbm_learning_rate,
+            random_state=42, n_jobs=-1
+        )
+        model_params["LightGBM"] = {
+            "n_estimators": lgbm_estimators, "max_depth": lgbm_max_depth, "learning_rate": lgbm_learning_rate
+        }
     selected_models = list(models.keys())
 
     st.subheader("SMOTE ile Sınıf Dengesi")
@@ -276,7 +328,7 @@ elif page == "Fraud Detector":
                 else:
                     val = 0
             inputs.append(val)
-        submit_button = st.form_submit_button(label='Check your Transaction')
+        submit_button = st.form_submit_button(label="Check your Transaction")
 
     if submit_button:
         try:
@@ -368,15 +420,15 @@ elif page == "Müşteri Kontrolü":
 
     # Tüm kontrol edilen işlemleri tablo olarak göster
     if st.session_state.kontrol_listesi:
-        st.markdown("### Tüm Kontrol Edilen İşlemler (Geçici Kayıt)")
+        st.markdown("### Tüm Kontrol Edilen İşlemler")
         tum_kontrol_df = pd.concat(st.session_state.kontrol_listesi, ignore_index=True)
         st.write(tum_kontrol_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
 st.sidebar.markdown("""
 ---
 <div style="font-size: 13px;">
-<b>Proje:</b> MIUUL DSMLBC17 Final Projesi - Fraud Detection<br>
-<b>Geliştiriciler:</b> Onur KARASÜRMELİ, Kemal BAL, Zeynep YERLİKAYA, Emre YILDIRIM<br>
-<b>Grup: 1</b>
+<b>Proje:</b> MIUUL DSMLBC17 Final Projesi - Fraud Detection\n<br>
+<b>Geliştiriciler:</b> Onur KARASÜRMELİ, Kemal BAL, Zeynep YERLİKAYA\n<br>
+<b>Grup 1</b>
 </div>
 """, unsafe_allow_html=True)
