@@ -1,27 +1,22 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from xgboost import XGBClassifier
-from lightgbm import LGBMClassifier
 from imblearn.over_sampling import SMOTE
-from collections import Counter
 
+import matplotlib.pyplot as plt
+import seaborn as sns
 import warnings
 import os
 
 warnings.filterwarnings("ignore")
 
+# Streamlit Page Config
 st.set_page_config(layout="wide")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", [
@@ -32,6 +27,7 @@ page = st.sidebar.radio("Go to", [
     "Müşteri Kontrolü"
 ])
 
+# DATA LOAD
 @st.cache_data
 def load_data():
     for root, dirs, files in os.walk(os.path.dirname(os.path.abspath(__file__))):
@@ -44,22 +40,27 @@ def load_data():
 
 data2 = load_data()
 data2 = data2.copy()
-data2['customer_id'] = data2.index  # Tüm veri için customer_id ekle
+data2.insert(0, 'customer_id', data2.index)
 
-# 50000 gözlem örneklem alma
+if 'customer_id' not in data2.columns:
+    data2.insert(0, 'customer_id', data2.index)
+
+# 50.000 gözlem örneklem alma
 if len(data2) > 50000:
     data = data2.sample(n=50000, random_state=42).copy()
 else:
     data = data2.copy()
-data['customer_id'] = data.index  # Örneklem için customer_id ekle
 
-# Sütun adını karşı repo ile uyumlu hale getir
+if 'customer_id' not in data.columns:
+    data.insert(0, 'customer_id', data.index)
+
+# Sütun adını uyumlu hale getir
 if "fraud_bool" in data.columns and "fraud" not in data.columns:
     data = data.rename(columns={"fraud_bool": "fraud"})
-
 if "fraud_bool" in data2.columns and "fraud" not in data2.columns:
     data2 = data2.rename(columns={"fraud_bool": "fraud"})
 
+# Preprocessing fonksiyonu
 def preprocess_data(df):
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
     categorical_cols = df.select_dtypes(include='object').columns
@@ -169,27 +170,6 @@ elif page == "Model Training":
     models = {}
     model_params = {}
 
-    if st.sidebar.checkbox("Logistic Regression", value=True):
-        st.sidebar.markdown("**Logistic Regression Ayarları**")
-        lr_c = st.sidebar.slider("C (LR)", 0.01, 10.0, 1.0, 0.01)
-        lr_max_iter = st.sidebar.number_input("Max Iter (LR)", 100, 5000, 3000, 100)
-        models["Logistic Regression"] = LogisticRegression(
-            C=lr_c, max_iter=lr_max_iter, solver='saga', n_jobs=-1, random_state=42
-        )
-        model_params["Logistic Regression"] = {"C": lr_c, "max_iter": lr_max_iter}
-
-    if st.sidebar.checkbox("KNN", value=True):
-        st.sidebar.markdown("**KNN Ayarları**")
-        knn_k = st.sidebar.slider("n_neighbors", 1, 20, 5, 1)
-        models["KNN"] = KNeighborsClassifier(n_neighbors=knn_k, n_jobs=-1)
-        model_params["KNN"] = {"n_neighbors": knn_k}
-
-    if st.sidebar.checkbox("Decision Tree", value=True):
-        st.sidebar.markdown("**Decision Tree Ayarları**")
-        dt_max_depth = st.sidebar.slider("max_depth (DT)", 1, 20, 3, 1)
-        models["Decision Tree"] = DecisionTreeClassifier(max_depth=dt_max_depth, random_state=42)
-        model_params["Decision Tree"] = {"max_depth": dt_max_depth}
-
     if st.sidebar.checkbox("Random Forest", value=True):
         st.sidebar.markdown("**Random Forest Ayarları**")
         rf_estimators = st.sidebar.slider("n_estimators (RF)", 10, 200, 20, 10)
@@ -199,39 +179,13 @@ elif page == "Model Training":
         )
         model_params["Random Forest"] = {"n_estimators": rf_estimators, "max_depth": rf_max_depth}
 
-    if st.sidebar.checkbox("XGBoost", value=True):
-        st.sidebar.markdown("**XGBoost Ayarları**")
-        xgb_estimators = st.sidebar.slider("n_estimators (XGB)", 10, 200, 20, 10)
-        xgb_max_depth = st.sidebar.slider("max_depth (XGB)", 1, 20, 3, 1)
-        xgb_learning_rate = st.sidebar.slider("learning_rate (XGB)", 0.01, 0.5, 0.1, 0.01)
-        models["XGBoost"] = XGBClassifier(
-            n_estimators=xgb_estimators, max_depth=xgb_max_depth, learning_rate=xgb_learning_rate,
-            random_state=42, verbosity=0, n_jobs=-1, use_label_encoder=False
-        )
-        model_params["XGBoost"] = {
-            "n_estimators": xgb_estimators, "max_depth": xgb_max_depth, "learning_rate": xgb_learning_rate
-        }
-
-    if st.sidebar.checkbox("LightGBM", value=True):
-        st.sidebar.markdown("**LightGBM Ayarları**")
-        lgbm_estimators = st.sidebar.slider("n_estimators (LGBM)", 10, 200, 20, 10)
-        lgbm_max_depth = st.sidebar.slider("max_depth (LGBM)", 1, 20, 3, 1)
-        lgbm_learning_rate = st.sidebar.slider("learning_rate (LGBM)", 0.01, 0.5, 0.1, 0.01)
-        models["LightGBM"] = LGBMClassifier(
-            n_estimators=lgbm_estimators, max_depth=lgbm_max_depth, learning_rate=lgbm_learning_rate,
-            random_state=42, n_jobs=-1
-        )
-        model_params["LightGBM"] = {
-            "n_estimators": lgbm_estimators, "max_depth": lgbm_max_depth, "learning_rate": lgbm_learning_rate
-        }
-
     selected_models = list(models.keys())
 
     st.subheader("SMOTE ile Sınıf Dengesi")
-    st.write(f"Before: {Counter(y)}")
+    st.write(f"Before: {dict(pd.Series(y).value_counts())}")
     smote = SMOTE(random_state=42)
     X_resampled, y_resampled = smote.fit_resample(X, y)
-    st.write(f"After: {Counter(y_resampled)}")
+    st.write(f"After: {dict(pd.Series(y_resampled).value_counts())}")
 
     X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
     scaler = StandardScaler()
@@ -264,43 +218,44 @@ elif page == "Model Training":
         all_roc_curves.append((name, fpr, tpr))
         trained_models[name] = model
 
-    results_df = pd.DataFrame(results).sort_values(by="Test ROC AUC", ascending=False)
-    st.subheader("Model Performans Sonuçları")
-    st.dataframe(results_df)
+    if results:
+        results_df = pd.DataFrame(results).sort_values(by="Test ROC AUC", ascending=False)
+        st.subheader("Model Performans Sonuçları")
+        st.dataframe(results_df)
 
-    st.subheader("ROC Eğrisi Karşılaştırması")
-    fig_roc, ax_roc = plt.subplots()
-    for name, fpr, tpr in all_roc_curves:
-        ax_roc.plot(fpr, tpr, label=name)
-    ax_roc.plot([0, 1], [0, 1], linestyle='--', color='gray')
-    ax_roc.set_xlabel("False Positive Rate")
-    ax_roc.set_ylabel("True Positive Rate")
-    ax_roc.set_title("ROC AUC Eğrisi")
-    ax_roc.legend()
-    st.pyplot(fig_roc)
+        st.subheader("ROC Eğrisi Karşılaştırması")
+        fig_roc, ax_roc = plt.subplots()
+        for name, fpr, tpr in all_roc_curves:
+            ax_roc.plot(fpr, tpr, label=name)
+        ax_roc.plot([0, 1], [0, 1], linestyle='--', color='gray')
+        ax_roc.set_xlabel("False Positive Rate")
+        ax_roc.set_ylabel("True Positive Rate")
+        ax_roc.set_title("ROC AUC Eğrisi")
+        ax_roc.legend()
+        st.pyplot(fig_roc)
 
-    st.subheader("Confusion Matrix & Classification Report")
-    for name in results_df.head(2)["Model"].values:
-        model = trained_models[name]
-        y_pred = model.predict(X_test_scaled)
-        cm = confusion_matrix(y_test, y_pred)
-        fig, ax = plt.subplots()
-        sns.heatmap(cm, annot=True, fmt='d', cmap="Blues", ax=ax)
-        ax.set_title(f"Confusion Matrix: {name}")
-        st.pyplot(fig)
-        st.text(f"{name} Classification Report:")
-        st.text(classification_report(y_test, y_pred))
+        st.subheader("Confusion Matrix & Classification Report")
+        for name in results_df.head(2)["Model"].values:
+            model = trained_models[name]
+            y_pred = model.predict(X_test_scaled)
+            cm = confusion_matrix(y_test, y_pred)
+            fig, ax = plt.subplots()
+            sns.heatmap(cm, annot=True, fmt='d', cmap="Blues", ax=ax)
+            ax.set_title(f"Confusion Matrix: {name}")
+            st.pyplot(fig)
+            st.text(f"{name} Classification Report:")
+            st.text(classification_report(y_test, y_pred))
 
-    if "Random Forest" in trained_models:
-        st.subheader("Özellik Önem Sıralaması (Random Forest)")
-        rf = trained_models["Random Forest"]
-        importances = rf.feature_importances_
-        indices = np.argsort(importances)[::-1][:10]
-        features = X.columns[indices]
-        fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(x=importances[indices], y=features, palette="viridis", ax=ax)
-        ax.set_title("Random Forest - En Önemli 10 Özellik")
-        st.pyplot(fig)
+        if "Random Forest" in trained_models:
+            st.subheader("Özellik Önem Sıralaması (Random Forest)")
+            rf = trained_models["Random Forest"]
+            importances = rf.feature_importances_
+            indices = np.argsort(importances)[::-1][:10]
+            features = X.columns[indices]
+            fig, ax = plt.subplots(figsize=(10, 5))
+            sns.barplot(x=importances[indices], y=features, palette="viridis", ax=ax)
+            ax.set_title("Random Forest - En Önemli 10 Özellik")
+            st.pyplot(fig)
 
 elif page == "Fraud Detector":
     st.title("Fraud Detector")
@@ -344,47 +299,78 @@ elif page == "Fraud Detector":
 
 elif page == "Müşteri Kontrolü":
     st.title("Müşteri Bazında Fraud Kontrolü")
+
+    if "kontrol_listesi" not in st.session_state:
+        st.session_state.kontrol_listesi = []
+
     if "customer_id" not in data2.columns:
         st.warning("Veri setinizde 'customer_id' kolonu yok. Bu özelliği kullanmak için müşteri ID'li veri gerekir.")
     else:
-        customer_ids = data2["customer_id"].unique()
-        selected_id = st.selectbox("Müşteri Seçiniz", customer_ids)
-        customer_rows = data2[data2["customer_id"] == selected_id]
-
-        st.write(f"Seçilen müşteri: **{selected_id}**")
-        st.write(f"Toplam işlem adedi: {len(customer_rows)}")
-        st.write("İşlem detayları:")
-        st.dataframe(customer_rows.head())
-
-        # Burada örneklem değil, yine eğitim için örneklem veri (data) ile modeli fit ediyoruz!
-        smote = SMOTE(random_state=42)
-        X_resampled, y_resampled = smote.fit_resample(X, y)
-        X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        rf = RandomForestClassifier(n_estimators=20, max_depth=3, random_state=42, n_jobs=-1)
-        rf.fit(X_train_scaled, y_train)
-
-        # Müşteri verisini preprocess et
-        cust_rows_proc, _ = preprocess_data(customer_rows)
-        model_features = list(X.columns)
-        X_cust = cust_rows_proc.reindex(columns=model_features, fill_value=0)
-        X_cust = X_cust[model_features]
-
-        X_cust_scaled = scaler.transform(X_cust)
-        preds = rf.predict(X_cust_scaled)
-
-        fraud_sum = np.sum(preds)
-        if fraud_sum > 0:
-            st.error(
-                f"Bu müşterinin işlemlerinde SAHTECİLİK şüphesi var! (Toplam {fraud_sum} işlem fraud olarak sınıflandı.)")
+        # Örneklemdeki müşteri ID'leri (string olarak)
+        sample_customer_ids = list(map(str, data["customer_id"].astype(str).unique()))
+        # Rastgele 1000 müşteri ID'si
+        if len(sample_customer_ids) > 1000:
+            random_sample_ids = list(np.random.choice(sample_customer_ids, 1000, replace=False))
         else:
-            st.success("Bu müşterinin işlemlerinde fraud tespit edilmedi.")
+            random_sample_ids = sample_customer_ids
 
-        fraud_ops = customer_rows.iloc[np.where(preds == 1)]
-        if not fraud_ops.empty:
-            st.write("Fraud olarak işaretlenen işlemler:")
-            st.dataframe(fraud_ops)
+        selected_id_from_list = st.selectbox("Hızlı Seçim (1000 rastgele müşteri ID'si):", random_sample_ids, key="customer_id_selectbox")
+        manual_id = st.text_input("Veya müşteri ID'si giriniz:", value="", key="customer_id_textinput")
+
+        # Kullanıcı manuel giriş yaptıysa onu, yoksa listedekini kullan
+        if manual_id.strip() != "":
+            selected_id = manual_id.strip()
+        else:
+            selected_id = selected_id_from_list
+
+        if selected_id not in sample_customer_ids:
+            st.error("Girilen müşteri ID'si 50.000 gözlemden oluşan örneklemde yok. Lütfen farklı kullanıcı arayın.")
+        else:
+            customer_rows = data2[data2["customer_id"].astype(str) == selected_id]
+            st.write(f"Seçilen müşteri: **{selected_id}**")
+            st.write("İşlem detayları:")
+            st.dataframe(customer_rows.head())
+
+            # Model eğitimi ve tahmini
+            smote = SMOTE(random_state=42)
+            X_resampled, y_resampled = smote.fit_resample(X, y)
+            X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
+            scaler = StandardScaler()
+            X_train_scaled = scaler.fit_transform(X_train)
+            rf = RandomForestClassifier(n_estimators=20, max_depth=3, random_state=42, n_jobs=-1)
+            rf.fit(X_train_scaled, y_train)
+
+            cust_rows_proc, _ = preprocess_data(customer_rows)
+            model_features = list(X.columns)
+            X_cust = cust_rows_proc.reindex(columns=model_features, fill_value=0)
+            X_cust = X_cust[model_features]
+            X_cust_scaled = scaler.transform(X_cust)
+            preds = rf.predict(X_cust_scaled)
+
+            fraud_sum = int(np.sum(preds))
+            if fraud_sum > 0:
+                st.error(f"Bu müşterinin işlemlerinde DOLANDIRICILIK şüphesi var!")
+            else:
+                st.success("Bu müşterinin işlemlerinde dolandırıcılık tespit EDİLMEDİ.")
+
+
+
+            # Etiketli tablo oluştur (FRAUD/NOT FRAUD)
+            etiketler = np.where(preds == 1,
+                                 '<span style="color:red;font-weight:bold;">FRAUD</span>',
+                                 '<span style="color:green;font-weight:bold;">NOT FRAUD</span>')
+            kontrol_df = customer_rows.copy()
+            kontrol_df.insert(0, "Durum", etiketler)
+
+
+            # Session state'e ekle
+            st.session_state.kontrol_listesi.append(kontrol_df)
+
+    # Tüm kontrol edilen işlemleri tablo olarak göster
+    if st.session_state.kontrol_listesi:
+        st.markdown("### Tüm Kontrol Edilen İşlemler (Geçici Kayıt)")
+        tum_kontrol_df = pd.concat(st.session_state.kontrol_listesi, ignore_index=True)
+        st.write(tum_kontrol_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
 st.sidebar.markdown("""
 ---

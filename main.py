@@ -1,23 +1,126 @@
-# 1. Veri Seti Hikayesi ve Problem Tanımı
-#
+#######################################################################################################################
+# 1. VERİ SETİ HİKAYESİ VE PROBLEM TANIMI
+#######################################################################################################################
+print("\n--- VERİ SETİ HİKAYESİ VE PROBLEM TANIMI ---\n")
+
+print("""
+Proje: Bankacılık Dolandırıcılığı Tespiti
+
+Veri Seti Hikayesi: 
+SecureBank, 10 milyondan fazla müşterisiyle faaliyet gösteren büyük bir dijital bankadır. Son yıllarda artan
+çevrimiçi işlem hacmiyle birlikte dolandırıcılık vakalarında da ciddi bir artış yaşanmıştır. Banka, bu durumu önlemek
+ve müşterilerini korumak adına kapsamlı bir makine öğrenmesi tabanlı dolandırıcılık tespit sistemi geliştirmek üzere
+veri bilimi ekibini görevlendirmiştir.
+
+Problem Tanımı: 
+SecureBank’in 6 aylık işlem geçmişini içeren anonimleştirilmiş bir veri seti oluşturulmuştur. Veri seti hem bireysel
+hem de ticari müşterilere ait işlemleri kapsar. Amaç, bu işlemlerin hangilerinin dolandırıcılık içerdiğini tahmin eden
+bir model geliştirmektir.
+""")
+
+# Değişken Tanımları
 """
-Veri Seti Hikayesi:
-Bu veri seti, finansal işlemler üzerinde sahtekarlık (fraud) tespitine yönelik bilgiler içermektedir.
-Amaç, işlemin sahte (fraud) olup olmadığını gösteren 'fraud_bool' değişkenini öngörecek bir model geliştirmektir.
+fraud_bool
+Dolandırıcılık etiketi (1 dolandırıcılık, 0 normal işlem)
 
-Problem Tanımı:
-Amaç; kullanıcıların işlemlerinin sahte olup olmadığını makine öğrenmesi modelleriyle tahmin edebilmektir.
+income
+Başvuranın yıllık geliri, kantillerle ifade edilmiştir. [0, 1] aralığındadır.
+
+name_email_similarity
+E-posta ile başvuranın adı arasındaki benzerlik ölçütü. Yüksek değerler daha yüksek benzerliği gösterir. [0, 1] aralığındadır.
+
+prev_address_months_count
+Başvuranın önceki kayıtlı adresinde geçirdiği ay sayısı, yani varsa önceki ikamet süresi. [-1, 380] ay aralığında (-1 eksik değer).
+
+current_address_months_count
+Başvuranın şu anki kayıtlı adresinde geçirdiği ay sayısı. [-1, 406] ay aralığında (-1 eksik değer).
+
+customer_age
+Başvuranın yaşı, on yıllık aralıklarda gruplanmış (örneğin, 20-29 yaş aralığı 20 olarak temsil edilir).
+
+days_since_request
+Başvurunun yapılmasından bu yana geçen gün sayısı. [0, 78] gün aralığında.
+
+intended_balcon_amount
+Başvuru için başlangıçta aktarılan tutar. [-1, 108] aralığında.
+
+payment_type
+Kredi ödeme planı türü. 5 farklı (anonimleştirilmiş) değer olabilir.
+
+zip_count_4w
+Son 4 haftada aynı posta kodunda yapılan başvuru sayısı. [1, 5767] aralığında.
+
+velocity_6h
+Son 6 saatte yapılan toplam başvuruların hızı, yani saat başına ortalama başvuru sayısı. [-211, 24763] aralığında.
+
+velocity_24h
+Son 24 saatte yapılan toplam başvuruların hızı, yani saat başına ortalama başvuru sayısı. [1329, 9527] aralığında.
+
+velocity_4w
+Son 4 haftada yapılan toplam başvuruların hızı, yani saat başına ortalama başvuru sayısı. [2779, 7043] aralığında.
+
+bank_branch_count_8w
+Seçilen banka şubesinde son 8 haftada yapılan toplam başvuru sayısı. [0, 2521] aralığında.
+
+date_of_birth_distinct_emails_4w
+Son 4 haftada aynı doğum tarihine sahip başvuranlar için kullanılan e-posta sayısı. [0, 42] aralığında.
+
+employment_status
+Başvuranın istihdam durumu. 7 farklı (anonimleştirilmiş) değer olabilir.
+
+credit_risk_score
+Başvurunun riskine ilişkin iç değerlendirme puanı. [-176, 387] aralığında.
+
+email_is_free
+Başvuru e-postasının alan adı (ücretsiz ya da ücretli).
+
+housing_status
+Başvuranın mevcut konut durumu. 7 farklı (anonimleştirilmiş) değer olabilir.
+
+phone_home_valid
+Verilen ev telefonu numarasının geçerliliği.
+
+phone_mobile_valid
+Verilen cep telefonu numarasının geçerliliği.
+
+bank_months_count
+Önceki hesabın (varsa) kaç aydır açık olduğu. [-1, 31] ay aralığında (-1 eksik değer).
+
+has_other_cards
+Başvuranın aynı bankadan başka kartlara sahip olup olmadığı.
+
+proposed_credit_limit
+Başvuranın önerdiği kredi limiti. [200, 2000] aralığında.
+
+foreign_request
+Başvurunun yapıldığı ülke ile bankanın bulunduğu ülke farklıysa.
+
+source
+Başvurunun yapıldığı çevrim içi kaynak. Tarayıcı (INTERNET) veya mobil uygulama (APP).
+
+session_length_in_minutes
+Banka sitesinde kullanıcının oturum süresi (dakika cinsinden). [-1, 107] dakika aralığında.
+
+device_os
+Başvurunun yapıldığı cihazın işletim sistemi. Olası değerler: Windows, Macintox, Linux, X11 ya da diğer.
+
+keep_alive_session
+Oturum kapatma tercihi (kullanıcı ayarı).
+
+device_distinct_emails_8w
+Aynı cihazdan son 8 haftada bankacılık sitesine erişim sağlayan farklı e-posta adresi sayısı. [0, 3] aralığında.
+
+device_fraud_count
+Aynı cihazla yapılan dolandırıcılık içerikli başvuru sayısı. [0, 1] aralığında.
+
+month
+Başvurunun yapıldığı ay. [0, 7] aralığında
 """
-
-
 
 # Paketleri yüklemek için requirements.txt dosyasını çalıştır
 # !pip install -r requirements.txt
 
-
-
 # Gerekli kütüphaneleri yükle
-#
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,17 +137,15 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-
+from sklearn.cluster import KMeans
 from imblearn.over_sampling import SMOTE
 from collections import Counter
+from scipy import stats
 
 import warnings
 warnings.filterwarnings("ignore")
 
-
-
 # Görselleştirme ayarları
-#
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
@@ -52,23 +153,15 @@ pd.set_option('display.width', 500)
 
 
 
-
-
-# 2. Keşifçi Veri Analizi (EDA)
-#
+#######################################################################################################################
+# 2. KEŞİFÇİ VERİ ANALİZİ (EDA)
+#######################################################################################################################
 print("\n--- KEŞİFÇİ VERİ ANALİZİ ---\n")
 
-
-
 # Veri seti yükleme ve okutma işlemi
-#
-
 data = pd.read_csv("datasets/Base.csv")
 
-
-
 # Veri setine genel bakış ve hızlı önizleme
-#
 def check_df(dataframe, head=5):
     print("##################### Shape #####################")
     print(dataframe.shape)
@@ -85,55 +178,37 @@ def check_df(dataframe, head=5):
 
 check_df(data)
 
-
-
 # Hedef değişken dağılımı grafiği
-#
 print(data["fraud_bool"].value_counts())
 sns.countplot(x="fraud_bool", data=data)
 plt.title("Fraud Dağılımı")
 plt.show()
 
-
-
 # Büyük veri setleri için örneklemeyle hızlandır (Burada veri seti 1000000 satır olduğundan yalnıca 50000 satırını alıyoruz)
-#
 if len(data) > 50000:
     data = data.sample(n=50000, random_state=42)
 
 data["customer_id"] = data.index
 
-
-
 # Sayısal ve kategorik sütunları ayır
-#
 numeric_cols = data.select_dtypes(include=['int64', 'float64']).columns
 categorical_cols = data.select_dtypes(include='object').columns
 
-
 # Eksik değer kontrolü
-#
 print("\nEksik Değerler:\n", data.isnull().sum())
 
 
 
-
-
-# 3. Veri Ön İşleme ve Özellik Mühendisliği
-#
+#######################################################################################################################
+# 3. VERİ ÖN İŞLEME ve ÖZELLİK MÜHENDİSLİĞİ
+#######################################################################################################################
 print("\n--- VERİ ÖN İŞLEME ve ÖZELLİK MÜHENDİSLİĞİ ---\n")
 
-
-
 # Sayısal sütunlar için median ile doldurma
-#
 imputer = SimpleImputer(strategy='median')
 data_numeric_imputed = pd.DataFrame(imputer.fit_transform(data[numeric_cols]), columns=numeric_cols)
 
-
-
 # Kategorik sütunları encode et
-#
 label_encoders = {}
 data_categorical_encoded = pd.DataFrame()
 for column in categorical_cols:
@@ -141,81 +216,53 @@ for column in categorical_cols:
     data_categorical_encoded[column] = le.fit_transform(data[column].astype(str))
     label_encoders[column] = le
 
-
-
 # Sayısal ve kategorik verileri birleştir
-#
 data_imputed = pd.concat([data_numeric_imputed, data_categorical_encoded], axis=1)
 
-
 # Özellik Mühendisliği
-#
-print("\nÖzellik Mühendisliği Uygulanıyor...")
-
 # 1. Zaman tabanlı özellikler
 data_imputed['days_since_request_log'] = np.log1p(data_imputed['days_since_request'])
 data_imputed['address_ratio'] = data_imputed['current_address_months_count'] / (data_imputed['prev_address_months_count'] + 1)
 data_imputed['address_total_time'] = data_imputed['current_address_months_count'] + data_imputed['prev_address_months_count']
 
 # 2. Hız ve oranlar
-try:
-    # Güvenli bölme işlemleri için epsilon değeri
-    epsilon = 1e-10
-    data_imputed['velocity_ratio_6h_24h'] = data_imputed['velocity_6h'] / (data_imputed['velocity_24h'] + epsilon)
-    data_imputed['velocity_ratio_24h_4w'] = data_imputed['velocity_24h'] / (data_imputed['velocity_4w'] + epsilon)
-    data_imputed['velocity_ratio_6h_4w'] = data_imputed['velocity_6h'] / (data_imputed['velocity_4w'] + epsilon)
-except Exception as e:
-    print(f"Hız oranları hesaplanırken hata oluştu: {e}")
+epsilon = 1e-10
+data_imputed['velocity_ratio_6h_24h'] = data_imputed['velocity_6h'] / (data_imputed['velocity_24h'] + epsilon)
+data_imputed['velocity_ratio_24h_4w'] = data_imputed['velocity_24h'] / (data_imputed['velocity_4w'] + epsilon)
+data_imputed['velocity_ratio_6h_4w'] = data_imputed['velocity_6h'] / (data_imputed['velocity_4w'] + epsilon)
 
 # 3. Risk skorları ve oranlar
-try:
-    epsilon = 1e-10  # Güvenli bölme için küçük değer
-    data_imputed['risk_income_ratio'] = data_imputed['credit_risk_score'] / (data_imputed['income'] * 100 + epsilon)
-    data_imputed['risk_age_ratio'] = data_imputed['credit_risk_score'] / (data_imputed['customer_age'] + epsilon)
-except Exception as e:
-    print(f"Risk oranları hesaplanırken hata oluştu: {e}")
+epsilon = 1e-10
+data_imputed['risk_income_ratio'] = data_imputed['credit_risk_score'] / (data_imputed['income'] * 100 + epsilon)
+data_imputed['risk_age_ratio'] = data_imputed['credit_risk_score'] / (data_imputed['customer_age'] + epsilon)
 
 # 4. Etkileşim özellikleri
 data_imputed['age_income_interaction'] = data_imputed['customer_age'] * data_imputed['income']
 data_imputed['risk_session_interaction'] = data_imputed['credit_risk_score'] * data_imputed['session_length_in_minutes']
 data_imputed['email_risk_interaction'] = data_imputed['name_email_similarity'] * data_imputed['credit_risk_score']
 
-# 5. Karmaşık özellikler
-try:
-    epsilon = 1e-10  # Güvenli bölme için küçük değer
-    data_imputed['risk_velocity_ratio'] = data_imputed['credit_risk_score'] / (data_imputed['velocity_24h'] + epsilon)
-    data_imputed['email_device_ratio'] = data_imputed['date_of_birth_distinct_emails_4w'] / (data_imputed['device_distinct_emails_8w'] + epsilon)
-    data_imputed['bank_activity_ratio'] = data_imputed['bank_months_count'] / (data_imputed['bank_branch_count_8w'] + epsilon)
-except Exception as e:
-    print(f"Karmaşık özellikler hesaplanırken hata oluştu: {e}")
-
-# 6. Kategorik değişkenlerden türetilen özellikler
+# 5. Kategorik değişkenlerden türetilen özellikler
 data_imputed['payment_risk'] = data_imputed['payment_type'].astype(str) + '_' + data_imputed['credit_risk_score'].astype(str)
 data_imputed['payment_risk'] = data_imputed['payment_risk'].astype('category').cat.codes
 
-# 7. Polinomial özellikler
-data_imputed['income_squared'] = data_imputed['income'] ** 2
-data_imputed['risk_score_squared'] = data_imputed['credit_risk_score'] ** 2
-
-# 8. Basamak özellikleri
+# 6. Basamak özellikleri
 data_imputed['risk_score_bin'] = pd.qcut(data_imputed['credit_risk_score'], q=5, labels=False, duplicates='drop')
 data_imputed['velocity_24h_bin'] = pd.qcut(data_imputed['velocity_24h'], q=5, labels=False, duplicates='drop')
 data_imputed['customer_age_bin'] = pd.cut(data_imputed['customer_age'], bins=[0, 25, 35, 50, 100], labels=False)
 
-# 9. Boolean özellikleri
+# 7. Boolean özellikleri
 data_imputed['is_high_risk'] = (data_imputed['credit_risk_score'] < 50).astype(int)
 data_imputed['is_new_bank_customer'] = (data_imputed['bank_months_count'] < 3).astype(int)
 data_imputed['is_high_velocity'] = (data_imputed['velocity_24h'] > data_imputed['velocity_24h'].median()).astype(int)
 
-# 10. Anomali skorları
-from scipy import stats
+# 8. Anomali skorları
 numeric_features = data_imputed.select_dtypes(include=['float64', 'int64']).columns
 for col in ['velocity_6h', 'velocity_24h', 'velocity_4w', 'credit_risk_score']:
     if col in data_imputed.columns:
         data_imputed[f'{col}_zscore'] = stats.zscore(data_imputed[col], nan_policy='omit')
         data_imputed[f'is_{col}_outlier'] = ((data_imputed[f'{col}_zscore'] > 3) | (data_imputed[f'{col}_zscore'] < -3)).astype(int)
 
-# 11. Logaritmik ve kök dönüşümleri
+# 9. Logaritmik ve kök dönüşümleri
 for col in ['income', 'credit_risk_score', 'velocity_24h', 'velocity_4w']:
     if col in data_imputed.columns:
         # Negatif değerler için güvenli log dönüşümü
@@ -223,168 +270,122 @@ for col in ['income', 'credit_risk_score', 'velocity_24h', 'velocity_4w']:
         # Negatif değerler için güvenli kök dönüşümü
         data_imputed[f'{col}_sqrt'] = np.sqrt(np.maximum(0, data_imputed[col]))
 
-# 12. Trigonometrik dönüşümler (döngüsel veriler için)
-if 'session_length_in_minutes' in data_imputed.columns:
-    # Dakika bazında döngüsel özellik (gün içinde)
-    data_imputed['session_sin'] = np.sin(2 * np.pi * data_imputed['session_length_in_minutes'] / 1440)
-    data_imputed['session_cos'] = np.cos(2 * np.pi * data_imputed['session_length_in_minutes'] / 1440)
-
-# 13. Gelişmiş etkileşim özellikleri
-# Çoklu değişken etkileşimleri
+# 10. Çoklu değişken etkileşimleri
 data_imputed['risk_velocity_age'] = data_imputed['credit_risk_score'] * data_imputed['velocity_24h'] * data_imputed['customer_age']
 data_imputed['risk_income_age'] = data_imputed['credit_risk_score'] * data_imputed['income'] * data_imputed['customer_age']
 
-# 14. Oransal özellikler
+# 11. Oransal özellikler
 if 'bank_months_count' in data_imputed.columns and 'customer_age' in data_imputed.columns:
     # Müşterinin yaşına göre banka kullanım süresi oranı
     data_imputed['bank_usage_lifetime_ratio'] = data_imputed['bank_months_count'] / (data_imputed['customer_age'] * 12 + 1)
 
-# 15. RFM benzeri özellikler (Recency, Frequency, Monetary)
+epsilon = 1e-10
+data_imputed['risk_velocity_ratio'] = data_imputed['credit_risk_score'] / (data_imputed['velocity_24h'] + epsilon)
+data_imputed['email_device_ratio'] = data_imputed['date_of_birth_distinct_emails_4w'] / (data_imputed['device_distinct_emails_8w'] + epsilon)
+data_imputed['bank_activity_ratio'] = data_imputed['bank_months_count'] / (data_imputed['bank_branch_count_8w'] + epsilon)
+
+# 12. RFM (Recency, Frequency, Monetary)
 if 'days_since_request' in data_imputed.columns and 'velocity_4w' in data_imputed.columns and 'income' in data_imputed.columns:
-    # Recency: days_since_request (zaten var)
-    # Frequency: velocity_4w (işlem sıklığı)
-    # Monetary: income (parasal değer)
-    # RFM skoru - güvenli bir şekilde hesapla
-    try:
-        # Her bir bileşeni ayrı ayrı hesapla ve eksik değerleri kontrol et
-        r_score = pd.qcut(data_imputed['days_since_request'], 5, labels=False, duplicates='drop')
-        f_score = pd.qcut(data_imputed['velocity_4w'], 5, labels=False, duplicates='drop')
-        m_score = pd.qcut(data_imputed['income'], 5, labels=False, duplicates='drop')
+    # Her bir bileşeni ayrı ayrı hesapla ve eksik değerleri kontrol et
+    r_score = pd.qcut(data_imputed['days_since_request'], 5, labels=False, duplicates='drop')
+    f_score = pd.qcut(data_imputed['velocity_4w'], 5, labels=False, duplicates='drop')
+    m_score = pd.qcut(data_imputed['income'], 5, labels=False, duplicates='drop')
 
-        # Eksik değerleri 0 ile doldur
-        r_score = r_score.fillna(0).astype(int)
-        f_score = f_score.fillna(0).astype(int)
-        m_score = m_score.fillna(0).astype(int)
+    # Eksik değerleri 0 ile doldur
+    r_score = r_score.fillna(0).astype(int)
+    f_score = f_score.fillna(0).astype(int)
+    m_score = m_score.fillna(0).astype(int)
 
-        # RFM skorunu hesapla
-        data_imputed['rfm_score'] = r_score + f_score + m_score
-    except Exception as e:
-        print(f"RFM skoru hesaplanırken hata oluştu: {e}")
-        # Alternatif olarak basit bir skor hesapla
-        data_imputed['rfm_score'] = (
-            (data_imputed['days_since_request'] > data_imputed['days_since_request'].median()).astype(int) +
-            (data_imputed['velocity_4w'] > data_imputed['velocity_4w'].median()).astype(int) +
-            (data_imputed['income'] > data_imputed['income'].median()).astype(int)
-        )
+    # RFM skorunu hesapla
+    data_imputed['rfm_score'] = r_score + f_score + m_score
 
-# 16. Kümeleme tabanlı özellikler
-from sklearn.cluster import KMeans
-try:
-    if len(data_imputed) > 1000:  # Yeterli veri varsa kümeleme yap
-        kmeans_features = ['credit_risk_score', 'income', 'velocity_24h', 'customer_age']
-        if all(col in data_imputed.columns for col in kmeans_features):
-            # Kümeleme için veri hazırlığı
-            kmeans_df = data_imputed[kmeans_features].copy()
+# 13. Kümeleme tabanlı özellikler
+if len(data_imputed) > 1000:
+    kmeans_features = ['credit_risk_score', 'income', 'velocity_24h', 'customer_age']
+    if all(col in data_imputed.columns for col in kmeans_features):
+        kmeans_df = data_imputed[kmeans_features].copy()
 
-            # Eksik değerleri doldur
-            for col in kmeans_features:
-                if kmeans_df[col].isnull().sum() > 0:
-                    kmeans_df[col].fillna(kmeans_df[col].median(), inplace=True)
+        # Eksik değerleri doldurma
+        for col in kmeans_features:
+            if kmeans_df[col].isnull().sum() > 0:
+                kmeans_df[col].fillna(kmeans_df[col].median(), inplace=True)
 
-            # Sonsuz değerleri kontrol et ve temizle
-            kmeans_df.replace([np.inf, -np.inf], np.nan, inplace=True)
-            for col in kmeans_features:
-                if kmeans_df[col].isnull().sum() > 0:
-                    kmeans_df[col].fillna(kmeans_df[col].median(), inplace=True)
+        # Sonsuz değer kontrolü
+        kmeans_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        for col in kmeans_features:
+            if kmeans_df[col].isnull().sum() > 0:
+                kmeans_df[col].fillna(kmeans_df[col].median(), inplace=True)
 
-            # Veri ölçeklendirme (KMeans için önemli)
-            from sklearn.preprocessing import StandardScaler
-            scaler = StandardScaler()
-            kmeans_df_scaled = scaler.fit_transform(kmeans_df)
+        # Veri ölçeklendirme
+        from sklearn.preprocessing import StandardScaler
+        scaler = StandardScaler()
+        kmeans_df_scaled = scaler.fit_transform(kmeans_df)
 
-            # Kümeleme modeli
-            kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
-            data_imputed['risk_cluster'] = kmeans.fit_predict(kmeans_df_scaled)
+        # Kümeleme modeli
+        kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
+        data_imputed['risk_cluster'] = kmeans.fit_predict(kmeans_df_scaled)
 
-            # Her küme için ortalama fraud oranını hesapla
-            cluster_fraud_rates = data_imputed.groupby('risk_cluster')['fraud_bool'].mean()
+        # Her küme için ortalama fraud oranı
+        cluster_fraud_rates = data_imputed.groupby('risk_cluster')['fraud_bool'].mean()
 
-            # Küme fraud oranlarını özellik olarak ekle
-            for cluster, rate in cluster_fraud_rates.items():
-                data_imputed.loc[data_imputed['risk_cluster'] == cluster, 'cluster_fraud_rate'] = rate
+        # Küme fraud oranlarını özellik olarak ekleme
+        for cluster, rate in cluster_fraud_rates.items():
+            data_imputed.loc[data_imputed['risk_cluster'] == cluster, 'cluster_fraud_rate'] = rate
 
-            # Küme merkezlerine olan uzaklıkları özellik olarak ekle
-            cluster_centers = kmeans.cluster_centers_
-            for i in range(len(cluster_centers)):
-                # Euclidean uzaklık hesapla
-                data_imputed[f'distance_to_cluster_{i}'] = np.sqrt(((kmeans_df_scaled - cluster_centers[i])**2).sum(axis=1))
-except Exception as e:
-    print(f"Kümeleme işlemi sırasında hata oluştu: {e}")
-    # Kümeleme başarısız olursa basit bir risk skoru oluştur
-    if all(col in data_imputed.columns for col in ['credit_risk_score', 'velocity_24h']):
-        data_imputed['risk_cluster'] = (
-            (data_imputed['credit_risk_score'] < data_imputed['credit_risk_score'].median()).astype(int) * 2 +
-            (data_imputed['velocity_24h'] > data_imputed['velocity_24h'].median()).astype(int)
-        )
-        data_imputed['cluster_fraud_rate'] = data_imputed.groupby('risk_cluster')['fraud_bool'].transform('mean')
+        # Küme merkezlerine olan uzaklıkları özellik olarak ekleme
+        cluster_centers = kmeans.cluster_centers_
+        for i in range(len(cluster_centers)):
+            # Uzaklık hesabı
+            data_imputed[f'distance_to_cluster_{i}'] = np.sqrt(((kmeans_df_scaled - cluster_centers[i])**2).sum(axis=1))
 
-# 17. Zamansal örüntü ve frekans tabanlı özellikler
-try:
-    # Hız değişkenlerinden zamansal örüntüler çıkar
-    if all(col in data_imputed.columns for col in ['velocity_6h', 'velocity_24h', 'velocity_4w']):
-        # Kısa vadeli hız değişimi (6 saat - 24 saat)
-        data_imputed['velocity_change_short'] = data_imputed['velocity_6h'] - (data_imputed['velocity_24h'] / 4)
 
-        # Uzun vadeli hız değişimi (24 saat - 4 hafta)
-        data_imputed['velocity_change_long'] = data_imputed['velocity_24h'] - (data_imputed['velocity_4w'] / 28)
 
-        # Hız değişim oranı (kısa vadeli / uzun vadeli)
-        epsilon = 1e-10  # Güvenli bölme için küçük değer
-        data_imputed['velocity_change_ratio'] = np.abs(data_imputed['velocity_change_short']) / (np.abs(data_imputed['velocity_change_long']) + epsilon)
+# 14. Zamansal örüntü ve frekans tabanlı özellikler
+# Hız tabanlı
+if all(col in data_imputed.columns for col in ['velocity_6h', 'velocity_24h', 'velocity_4w']):
+    # Kısa vadeli hız değişimi (6 saat - 24 saat)
+    data_imputed['velocity_change_short'] = data_imputed['velocity_6h'] - (data_imputed['velocity_24h'] / 4)
 
-        # Anormal hız değişimi (z-score tabanlı)
-        data_imputed['velocity_change_short_zscore'] = stats.zscore(data_imputed['velocity_change_short'], nan_policy='omit')
-        data_imputed['is_abnormal_velocity_change'] = (np.abs(data_imputed['velocity_change_short_zscore']) > 2).astype(int)
+    # Uzun vadeli hız değişimi (24 saat - 4 hafta)
+    data_imputed['velocity_change_long'] = data_imputed['velocity_24h'] - (data_imputed['velocity_4w'] / 28)
 
-    # Frekans tabanlı özellikler
-    if 'bank_branch_count_8w' in data_imputed.columns and 'bank_months_count' in data_imputed.columns:
-        try:
-            epsilon = 1e-10  # Güvenli bölme için küçük değer
-            # Haftalık ortalama şube ziyareti
-            data_imputed['avg_branch_visits_per_week'] = data_imputed['bank_branch_count_8w'] / 8
+    # Hız değişim oranı (kısa vadeli / uzun vadeli)
+    epsilon = 1e-10
+    data_imputed['velocity_change_ratio'] = np.abs(data_imputed['velocity_change_short']) / (np.abs(data_imputed['velocity_change_long']) + epsilon)
 
-            # Aylık şube ziyaret yoğunluğu
-            data_imputed['branch_visit_intensity'] = data_imputed['bank_branch_count_8w'] / (data_imputed['bank_months_count'] + epsilon)
-        except Exception as e:
-            print(f"Frekans tabanlı özellikler hesaplanırken hata oluştu: {e}")
+    # Anormal hız değişimi (z-score tabanlı)
+    data_imputed['velocity_change_short_zscore'] = stats.zscore(data_imputed['velocity_change_short'], nan_policy='omit')
+    data_imputed['is_abnormal_velocity_change'] = (np.abs(data_imputed['velocity_change_short_zscore']) > 2).astype(int)
 
-        # Anormal şube ziyaret yoğunluğu
-        data_imputed['branch_visit_intensity_zscore'] = stats.zscore(data_imputed['branch_visit_intensity'], nan_policy='omit')
-        data_imputed['is_abnormal_branch_activity'] = (data_imputed['branch_visit_intensity_zscore'] > 2).astype(int)
+# Frekans tabanlı özellikler
+if 'bank_branch_count_8w' in data_imputed.columns and 'bank_months_count' in data_imputed.columns:
+    epsilon = 1e-10
+    # Haftalık ortalama şube ziyareti
+    data_imputed['avg_branch_visits_per_week'] = data_imputed['bank_branch_count_8w'] / 8
 
-    # Aktivite yoğunluğu özellikleri
-    if 'session_length_in_minutes' in data_imputed.columns and 'velocity_24h' in data_imputed.columns:
-        try:
-            epsilon = 1e-10  # Güvenli bölme için küçük değer
-            # Oturum başına aktivite yoğunluğu
-            data_imputed['activity_per_minute'] = data_imputed['velocity_24h'] / (data_imputed['session_length_in_minutes'] + epsilon)
-        except Exception as e:
-            print(f"Aktivite yoğunluğu özellikleri hesaplanırken hata oluştu: {e}")
+    # Aylık şube ziyaret yoğunluğu
+    data_imputed['branch_visit_intensity'] = data_imputed['bank_branch_count_8w'] / (data_imputed['bank_months_count'] + epsilon)
 
-        # Anormal aktivite yoğunluğu
-        data_imputed['activity_per_minute_zscore'] = stats.zscore(data_imputed['activity_per_minute'], nan_policy='omit')
-        data_imputed['is_abnormal_activity_rate'] = (data_imputed['activity_per_minute_zscore'] > 2).astype(int)
-except Exception as e:
-    print(f"Zamansal örüntü özellikleri oluşturulurken hata oluştu: {e}")
+    # Anormal şube ziyaret yoğunluğu
+    data_imputed['branch_visit_intensity_zscore'] = stats.zscore(data_imputed['branch_visit_intensity'], nan_policy='omit')
+    data_imputed['is_abnormal_branch_activity'] = (data_imputed['branch_visit_intensity_zscore'] > 2).astype(int)
 
-print(f"Özellik mühendisliği sonrası sütun sayısı: {data_imputed.shape[1]}")
+# Aktivite yoğunluğu özellikleri
+if 'session_length_in_minutes' in data_imputed.columns and 'velocity_24h' in data_imputed.columns:
+    epsilon = 1e-10
+    # Oturum başına aktivite yoğunluğu
+    data_imputed['activity_per_minute'] = data_imputed['velocity_24h'] / (data_imputed['session_length_in_minutes'] + epsilon)
 
-# Özellik mühendisliği görselleştirmeleri
-print("\nÖzellik mühendisliği görselleştirmeleri oluşturuluyor...")
+    # Anormal aktivite yoğunluğu
+    data_imputed['activity_per_minute_zscore'] = stats.zscore(data_imputed['activity_per_minute'], nan_policy='omit')
+    data_imputed['is_abnormal_activity_rate'] = (data_imputed['activity_per_minute_zscore'] > 2).astype(int)
 
-# Görselleştirmeleri kaydetmek için fonksiyon
-def save_figure(fig, filename):
-    """Görselleştirmeyi images klasörüne kaydet"""
-    fig.savefig(f"images/{filename}", dpi=300, bbox_inches='tight')
-    print(f"Görsel kaydedildi: images/{filename}")
-
-# 1. Orijinal ve türetilmiş özelliklerin dağılımı
-# Önemli orijinal özelliklerden birkaçını seç
+# Özellik mühendisliği grafikleri
+#Orijinal ve türetilmiş özelliklerin dağılımı
 original_features = ['credit_risk_score', 'velocity_24h', 'income', 'customer_age']
-# Türetilmiş özelliklerden birkaçını seç
 derived_features = ['risk_income_ratio', 'velocity_ratio_24h_4w', 'rfm_score', 'is_high_risk']
 
-# Orijinal özelliklerin dağılımını görselleştir
+# Orijinal özelliklerin grafikleri
 plt.figure(figsize=(15, 10))
 for i, feature in enumerate(original_features):
     if feature in data_imputed.columns:
@@ -393,11 +394,10 @@ for i, feature in enumerate(original_features):
         plt.title(f"Orijinal Özellik: {feature}")
         plt.tight_layout()
 fig = plt.gcf()  # Geçerli figürü al
-save_figure(fig, "Orijinal_Ozellikler_Dagilimi.png")
 plt.show()
 plt.close()
 
-# Türetilmiş özelliklerin dağılımını görselleştir
+# Türetilmiş özelliklerin grafikleri
 plt.figure(figsize=(15, 10))
 for i, feature in enumerate(derived_features):
     if feature in data_imputed.columns:
@@ -406,7 +406,6 @@ for i, feature in enumerate(derived_features):
         plt.title(f"Türetilmiş Özellik: {feature}")
         plt.tight_layout()
 fig = plt.gcf()
-save_figure(fig, "Turetilmis_Ozellikler_Dagilimi.png")
 plt.show()
 plt.close()
 
@@ -416,16 +415,13 @@ feature_categories = {
     'Hız ve Oranlar': ['velocity_ratio_6h_24h', 'velocity_ratio_24h_4w', 'velocity_ratio_6h_4w'],
     'Risk Skorları': ['risk_income_ratio', 'risk_age_ratio'],
     'Etkileşim': ['age_income_interaction', 'risk_session_interaction', 'email_risk_interaction'],
-    'Karmaşık': ['risk_velocity_ratio', 'email_device_ratio', 'bank_activity_ratio'],
     'Kategorik Türetilmiş': ['payment_risk'],
-    'Polinomial': ['income_squared', 'risk_score_squared'],
     'Basamak': ['risk_score_bin', 'velocity_24h_bin', 'customer_age_bin'],
     'Boolean': ['is_high_risk', 'is_new_bank_customer', 'is_high_velocity'],
     'Anomali': [col for col in data_imputed.columns if 'zscore' in col or 'outlier' in col],
     'Logaritmik/Kök': [col for col in data_imputed.columns if '_log' in col or '_sqrt' in col],
-    'Trigonometrik': ['session_sin', 'session_cos'],
-    'Gelişmiş Etkileşim': ['risk_velocity_age', 'risk_income_age'],
-    'Oransal': ['bank_usage_lifetime_ratio'],
+    'Çoklu Değişken Etkileşimleri': ['risk_velocity_age', 'risk_income_age'],
+    'Oransal': ['bank_usage_lifetime_ratio', 'risk_velocity_ratio', 'email_device_ratio', 'bank_activity_ratio'],
     'RFM': ['rfm_score'],
     'Kümeleme': [col for col in data_imputed.columns if 'cluster' in col or 'distance_to_cluster' in col],
     'Zamansal Örüntü': [col for col in data_imputed.columns if 'velocity_change' in col or 'activity_per_minute' in col]
@@ -452,7 +448,6 @@ plt.xlabel("Özellik Sayısı")
 plt.ylabel("Özellik Kategorisi")
 plt.tight_layout()
 fig = plt.gcf()
-save_figure(fig, "Ozellik_Kategorileri_Sayilari.png")
 plt.show()
 plt.close()
 
@@ -488,13 +483,11 @@ if category_examples:
 
         plt.title(f"{category}: {feature}")
         plt.tight_layout()
-
     fig = plt.gcf()
-    save_figure(fig, "Ozellik_Kategorileri_Ornekleri.png")
     plt.show()
     plt.close()
 
-# 3. Korelasyon matrisi - Önemli özellikler arasında
+# 3. Korelasyon matrisi
 # Orijinal ve türetilmiş özelliklerden önemli olanları seç
 important_features = original_features + derived_features
 # Veri setinde olan özellikleri filtrele
@@ -512,7 +505,6 @@ if len(valid_features) > 0:
     plt.title("Önemli Özellikler Arasındaki Korelasyon")
     plt.tight_layout()
     fig = plt.gcf()
-    save_figure(fig, "Onemli_Ozellikler_Korelasyon.png")
     plt.show()
     plt.close()
 
@@ -530,7 +522,7 @@ if zscore_columns:
         plt.legend()
     plt.tight_layout()
     fig = plt.gcf()
-    save_figure(fig, "Anomali_Tespiti_Zscore.png")
+
     plt.show()
     plt.close()
 
@@ -547,7 +539,7 @@ if zscore_columns:
         plt.xlabel("Anomali Oranı (%)")
         plt.tight_layout()
         fig = plt.gcf()
-        save_figure(fig, "Anomali_Oranlari.png")
+
         plt.show()
         plt.close()
 
@@ -574,7 +566,6 @@ plt.xlabel("Korelasyon Katsayısı")
 plt.axvline(x=0, color='black', linestyle='-')
 plt.tight_layout()
 fig = plt.gcf()
-save_figure(fig, "Fraud_Iliskili_Ozellikler.png")
 plt.show()
 plt.close()
 
@@ -621,7 +612,7 @@ if len(top_fraud_features) >= 3:
 
     plt.tight_layout()
     fig = plt.gcf()
-    save_figure(fig, "Fraud_Iliskili_Ozellikler_Dagilimi.png")
+
     plt.show()
     plt.close()
 
@@ -640,7 +631,6 @@ for i, v in enumerate(shapes):
     plt.text(i, v + 5, str(v), ha='center')
 plt.tight_layout()
 fig = plt.gcf()
-save_figure(fig, "Ozellik_Muhendisligi_Karsilastirma.png")
 plt.show()
 plt.close()
 
@@ -671,66 +661,10 @@ plt.ylim(0.7, 0.95)
 plt.grid(True, linestyle='--', alpha=0.7)
 plt.xticks(rotation=45)
 plt.tight_layout()
-fig = plt.gcf()
-save_figure(fig, "Ozellik_Muhendisligi_Model_Etkisi.png")
 plt.show()
 plt.close()
 
-# 8. Özellik mühendisliği görselleştirmelerinin özeti
-print("\nÖzellik mühendisliği görselleştirmelerinin özeti:")
-visualization_summary = """
-Oluşturulan görselleştirmeler:
-
-1. Orijinal Özellikler Dağılımı (Orijinal_Ozellikler_Dagilimi.png):
-   - Orijinal veri setindeki önemli özelliklerin dağılımını gösterir.
-   - Veri setinin temel özelliklerini anlamak için önemlidir.
-
-2. Türetilmiş Özellikler Dağılımı (Turetilmis_Ozellikler_Dagilimi.png):
-   - Özellik mühendisliği sonucu oluşturulan yeni özelliklerin dağılımını gösterir.
-   - Yeni özelliklerin nasıl bir dağılıma sahip olduğunu anlamak için önemlidir.
-
-3. Özellik Kategorileri Sayıları (Ozellik_Kategorileri_Sayilari.png):
-   - Her bir özellik kategorisinde kaç özellik olduğunu gösterir.
-   - Hangi tür özelliklerin daha fazla üretildiğini anlamak için önemlidir.
-
-4. Özellik Kategorileri Örnekleri (Ozellik_Kategorileri_Ornekleri.png):
-   - Her bir özellik kategorisinden bir örnek özelliğin dağılımını gösterir.
-   - Farklı kategorilerdeki özelliklerin nasıl göründüğünü anlamak için önemlidir.
-
-5. Önemli Özellikler Korelasyon Matrisi (Onemli_Ozellikler_Korelasyon.png):
-   - Önemli özellikler arasındaki ilişkileri gösterir.
-   - Hangi özelliklerin birbiriyle ilişkili olduğunu anlamak için önemlidir.
-
-6. Anomali Tespiti Z-Score (Anomali_Tespiti_Zscore.png):
-   - Z-score değerlerinin dağılımını ve anomali eşiklerini gösterir.
-   - Anormal değerlerin nasıl tespit edildiğini anlamak için önemlidir.
-
-7. Anomali Oranları (Anomali_Oranlari.png):
-   - Her bir özellik için tespit edilen anomali oranlarını gösterir.
-   - Hangi özelliklerde daha fazla anomali olduğunu anlamak için önemlidir.
-
-8. Fraud İlişkili Özellikler (Fraud_Iliskili_Ozellikler.png):
-   - Fraud ile en çok ilişkili özellikleri ve korelasyon katsayılarını gösterir.
-   - Hangi özelliklerin fraud tespitinde daha önemli olduğunu anlamak için önemlidir.
-
-9. Fraud İlişkili Özelliklerin Dağılımı (Fraud_Iliskili_Ozellikler_Dagilimi.png):
-   - Fraud ile ilişkili özelliklerin fraud ve normal işlemler için dağılımını gösterir.
-   - Fraud işlemlerin hangi özellik değerlerinde yoğunlaştığını anlamak için önemlidir.
-
-10. Özellik Mühendisliği Karşılaştırma (Ozellik_Muhendisligi_Karsilastirma.png):
-    - Özellik mühendisliği öncesi ve sonrası özellik sayılarını karşılaştırır.
-    - Özellik mühendisliğinin veri setini nasıl zenginleştirdiğini gösterir.
-
-11. Özellik Mühendisliği Model Etkisi (Ozellik_Muhendisligi_Model_Etkisi.png):
-    - Özellik mühendisliği adımlarının model performansına etkisini simüle eder.
-    - Farklı özellik kategorilerinin model performansına potansiyel katkısını gösterir.
-"""
-print(visualization_summary)
-
 # Özellik Seçimi
-#
-print("\nÖzellik Seçimi Uygulanıyor...")
-
 # 1. Yüksek korelasyonlu özellikleri kaldır
 def remove_highly_correlated_features(df, threshold=0.95):
     # Korelasyon matrisi hesapla
@@ -740,9 +674,11 @@ def remove_highly_correlated_features(df, threshold=0.95):
     upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
 
     # Eşik değerinden yüksek korelasyona sahip sütunları bul
-    to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
+    to_drop = [column for column in upper.columns if column != "customer_id" and any(upper[column] > threshold)]
 
     print(f"Yüksek korelasyonlu {len(to_drop)} özellik kaldırıldı")
+    # Kaldırılan özellikleri yazdır
+    print("Kaldırılan özellikler:", to_drop)
     return df.drop(to_drop, axis=1)
 
 # Hedef değişkeni ayır
@@ -752,10 +688,9 @@ y = data_imputed["fraud_bool"]
 # Yüksek korelasyonlu özellikleri kaldır
 X_reduced = remove_highly_correlated_features(X_all, threshold=0.95)
 
-# Sonsuz değerleri ve aşırı büyük değerleri temizle
-print("\nVeri temizleme işlemi yapılıyor...")
 # Sonsuz değerleri NaN ile değiştir
 X_reduced.replace([np.inf, -np.inf], np.nan, inplace=True)
+
 # NaN değerleri medyan ile doldur
 for col in X_reduced.columns:
     if X_reduced[col].isnull().sum() > 0:
@@ -770,6 +705,7 @@ for col in X_reduced.columns:
     lower_limit = X_reduced[col].quantile(0.001)
     X_reduced[col] = np.maximum(X_reduced[col], lower_limit)
 
+print(f"Veri temizleme öncesi sütun sayısı: {X_all.shape[1]}")
 print(f"Veri temizleme sonrası sütun sayısı: {X_reduced.shape[1]}")
 
 # 2. Özellik önem sıralaması için basit bir model eğit
@@ -782,67 +718,50 @@ selector = SelectFromModel(feature_selector, threshold="median")
 
 # Modeli eğit ve önemli özellikleri seç
 use_fallback = False
-try:
-    selector.fit(X_reduced, y)
-    X_selected = selector.transform(X_reduced)
-    selected_feature_indices = selector.get_support(indices=True)
-    selected_feature_names = X_reduced.columns[selected_feature_indices]
-except Exception as e:
-    print(f"Özellik seçimi sırasında hata oluştu: {e}")
-    print("Alternatif özellik seçimi yöntemi kullanılıyor...")
+
+selector.fit(X_reduced, y)
+X_selected = selector.transform(X_reduced)
+selected_feature_indices = selector.get_support(indices=True)
+selected_feature_names = X_reduced.columns[selected_feature_indices]
+
+if len(selected_feature_names) < 10:
+    # Eğer seçilen özellik sayısı 10'dan azsa, tüm özellikleri kullan
     use_fallback = True
-    # Hata durumunda basit bir özellik seçimi yap
-    # Varyansı sıfır olan özellikleri kaldır
-    from sklearn.feature_selection import VarianceThreshold
-    var_selector = VarianceThreshold(threshold=0.0)
-    var_selector.fit(X_reduced)
-    selected_feature_indices = var_selector.get_support(indices=True)
-    selected_feature_names = X_reduced.columns[selected_feature_indices]
-    X_selected = X_reduced.iloc[:, selected_feature_indices]
 
-print(f"Özellik seçimi sonrası {len(selected_feature_names)} özellik kaldı")
-print("Seçilen özelliklerden bazıları:", selected_feature_names[:10].tolist())
+# Seçilen özelliklerin isimlerini yazdırma
+print("\nSeçilen Özellikler:")
+print(selected_feature_names.tolist())
 
-# Seçilen özellikleri kullanarak veri çerçevesini güncelle
+print(f"\nÖzellik seçimi sonrası {len(selected_feature_names)} özellik kaldı")
+print("\nSeçilen özelliklerden bazıları:", selected_feature_names[:10].tolist())
+
+# Seçilen özellikleri kullanarak veri çerçevesini güncelleme
 if use_fallback:
-    # Fallback yöntemi kullanıldıysa X_selected zaten hazır
     X = X_selected
 else:
     X = X_reduced.iloc[:, selected_feature_indices]
 
 # SMOTE ile dengeleme
-#
 print("\nSMOTE Uygulanmadan Önce:", Counter(y))
 smote = SMOTE(random_state=42)
 X_resampled, y_resampled = smote.fit_resample(X, y)
 print("SMOTE Uygulandıktan Sonra:", Counter(y_resampled))
 
-
-
 # Eğitim ve test verisi ayır
-#
 X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
 
-
-
 # Özellik ölçekleme (StandardScaler)
-#
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 
 
-
-
-# 4. Modelleme
-#
+#######################################################################################################################
+# 4. MODELLEME
+#######################################################################################################################
 print("\n--- MODELLEME ---\n")
 
-
-
-# Modeller
-#
 models = {
     "Logistic Regression": LogisticRegression(max_iter=3000, solver='saga', n_jobs=-1, random_state=42),
     "KNN": KNeighborsClassifier(n_neighbors=5, n_jobs=-1),
@@ -852,10 +771,7 @@ models = {
     "LightGBM": LGBMClassifier(n_estimators=20, max_depth=3, random_state=42, n_jobs=-1)
 }
 
-
-
 # Model performanslarını sakla
-#
 results = []
 
 for name, model in models.items():
@@ -879,19 +795,14 @@ for name, model in models.items():
         "F1-score": report["weighted avg"]["f1-score"]
     })
 
-    print(f"\n{name}:")
+    print(f"{name}:")
     print(f"Train Accuracy: {train_acc:.4f} | Test Accuracy: {test_acc:.4f}")
     print(f"Train ROC AUC: {train_roc_auc:.4f} | Test ROC AUC: {test_roc_auc:.4f}")
 
-
-
 # Sonuçları DataFrame olarak yazdır
-#
 results_df = pd.DataFrame(results)
 print("\nModel Karşılaştırmaları:")
 print(results_df.sort_values(by="Test ROC AUC", ascending=False))
-
-
 
 # Overfitting kontrolü için eğitim ve test skorlarını karşılaştır
 #
@@ -900,10 +811,7 @@ for i, row in results_df.iterrows():
     diff = row["Train ROC AUC"] - row["Test ROC AUC"]
     print(f"{row['Model']}: Train-Test ROC AUC Farkı = {diff:.4f}")
 
-
-
 # En iyi 2 model için confusion matrix ve classification report
-#
 best_models = results_df.sort_values(by="Test ROC AUC", ascending=False).head(2)["Model"].values
 
 for name in best_models:
@@ -922,17 +830,13 @@ for name in best_models:
     print(f"\n{name} Classification Report:")
     print(classification_report(y_test, y_pred))
 
-
-
 # Random Forest için feature importance (ilk 15 özellik)
-#
 rf = models["Random Forest"]
 importances = rf.feature_importances_
 indices = np.argsort(importances)[::-1][:15]
 features = X.columns[indices]
 
 # Özellik önem sıralamasını görselleştir
-#
 plt.figure(figsize=(12, 8))
 sns.barplot(x=importances[indices], y=features, palette="viridis")
 plt.title("Random Forest - En Önemli 15 Özellik")
@@ -942,7 +846,6 @@ plt.show()
 plt.close()
 
 # Mühendislik yapılmış özelliklerin önem analizi
-#
 engineered_features = [col for col in X.columns if col not in data.columns]
 engineered_indices = [i for i, col in enumerate(X.columns) if col in engineered_features]
 
@@ -974,68 +877,17 @@ if engineered_indices and len(importances) > 0:
         plt.show()
         plt.close()
 
-        print("\nEn önemli mühendislik yapılmış özellikler:")
-        for i, feature in enumerate(top_eng_features[:10]):
-            print(f"{i+1}. {feature}: {top_eng_importances[i]:.4f}")
-    else:
-        print("\nMühendislik yapılmış özellikler model tarafından seçilmedi.")
 
 
-
-
-
-# 5. Bulgular ve İş Önerileri
-#
+#######################################################################################################################
+# 5. BULGULAR VE İŞ ÖNERİLERİ
+#######################################################################################################################
 print("\n--- BULGULAR VE İŞ ÖNERİLERİ ---\n")
 
+# Önemli özellikleri al
+important_features = []
+if 'features' in locals() and len(features) > 0:
+    max_features = min(5, len(features))
+    important_features = list(features[:max_features])
 
-# Bulgular ve öneriler
-#
-# En önemli mühendislik yapılmış özellikleri belirle
-top_engineered = []
-if 'top_eng_features' in locals() and len(top_eng_features) > 0:
-    # Dizin sınırlarını kontrol et
-    max_features = min(5, len(top_eng_features))
-    top_engineered = top_eng_features[:max_features]
 
-try:
-    # Güvenli bir şekilde en iyi modeli al
-    best_model = "Bilinmiyor"
-    if 'results_df' in locals() and not results_df.empty:
-        best_model = results_df.sort_values(by="Test ROC AUC", ascending=False).iloc[0]["Model"]
-
-    # Güvenli bir şekilde mühendislik yapılmış özellik sayısını al
-    num_engineered = 0
-    if 'engineered_features' in locals():
-        num_engineered = len(engineered_features)
-
-    # Güvenli bir şekilde önemli özellikleri al
-    important_features = []
-    if 'features' in locals() and len(features) > 0:
-        max_features = min(5, len(features))
-        important_features = list(features[:max_features])
-
-    print("""
-- En başarılı model: {}
-- Model sonuçlarına göre, veri setinde dengesiz sınıflar SMOTE ile dengelendikten sonra modellerin başarısı önemli ölçüde arttı.
-- Özellik mühendisliği sonucunda {} yeni özellik oluşturuldu ve özellik seçimi ile en önemli özellikler belirlendi.
-- Özellik önem sıralamasında öne çıkan değişkenler: {}
-- Mühendislik yapılmış özelliklerden öne çıkanlar: {}
-- Özellikle hız oranları (velocity ratios) ve risk skorları ile ilgili türetilmiş özellikler sahtekarlık tespitinde önemli rol oynamaktadır.
-- İşlemlerde tespit edilen anomali örüntüleri daha ayrıntılı incelenmeli.
-- İş birimleriyle birlikte, yüksek riskli işlemler için ek doğrulama adımları uygulanabilir.
-- Özellik mühendisliği ve özellik seçimi, model performansını artırırken, modelin yorumlanabilirliğini de iyileştirmiştir.
-""".format(
-        best_model,
-        num_engineered,
-        important_features,
-        top_engineered
-    ))
-except Exception as e:
-    print(f"Sonuçları yazdırırken hata oluştu: {e}")
-    print("""
-- Özellik mühendisliği ve model eğitimi başarıyla tamamlandı.
-- Özellikle hız oranları (velocity ratios) ve risk skorları ile ilgili türetilmiş özellikler sahtekarlık tespitinde önemli rol oynamaktadır.
-- İşlemlerde tespit edilen anomali örüntüleri daha ayrıntılı incelenmeli.
-- İş birimleriyle birlikte, yüksek riskli işlemler için ek doğrulama adımları uygulanabilir.
-""")
