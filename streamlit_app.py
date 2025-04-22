@@ -412,7 +412,9 @@ st.sidebar.markdown("""
 ---
 <div style="font-size: 13px;">
 <b>Proje:</b> MIUUL DSMLBC17 Final Projesi - Fraud Detection\n<br>
-<b>Geliştiriciler:</b> Onur KARASÜRMELİ, Kemal BAL, Zeynep YERLİKAYA\n<br>
+<b></b>
+<b>Geliştiriciler:</b><br>Onur KARASÜRMELİ\n<br>Kemal BAL\n<br>Zeynep YERLİKAYA\n<br>
+<b></b>
 <b>Grup 1</b>
 </div>
 """, unsafe_allow_html=True)
