@@ -103,7 +103,7 @@ if page == "Ana Sayfa":
             </div>
         </div>
         <div style="flex:1;display:flex;justify-content:center;">
-            <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/app_images/fraud_detection.png?raw=true" alt="Fraud Detection" style="width:500px;height:300px;">
+            <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/app_images/fraud_detection.png?raw=true" alt="Fraud Detection" style="width:500px;height:400px;">
         </div>
     </div>
     """, unsafe_allow_html=True)
