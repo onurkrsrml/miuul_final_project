@@ -15,25 +15,22 @@ from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from imblearn.over_sampling import SMOTE
 from collections import Counter
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 import warnings
 import os
 
 warnings.filterwarnings("ignore")
 
-# Streamlit Page Config
 st.set_page_config(layout="wide")
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", [
-    "Home",
-    "Data Exploration",
-    "Model Training",
-    "Fraud Detector",
+st.sidebar.title("Navigasyon")
+page = st.sidebar.radio("Sayfaya Git", [
+    "Ana Sayfa",
+    "Veri Önizleme",
+    "Model Eğitimi",
+    "Fraud Tespiti",
     "Müşteri Kontrolü"
 ])
 
-# DATA LOAD
 @st.cache_data
 def load_data():
     for root, dirs, files in os.walk(os.path.dirname(os.path.abspath(__file__))):
@@ -41,7 +38,6 @@ def load_data():
             if file.endswith(".csv"):
                 csv_path = os.path.join(root, file)
                 return pd.read_csv(csv_path)
-    st.error("Proje dizininde yüklenebilecek bir .csv dosyası bulunamadı!")
     st.stop()
 
 data2 = load_data()
@@ -51,7 +47,6 @@ data2.insert(0, 'customer_id', data2.index)
 if 'customer_id' not in data2.columns:
     data2.insert(0, 'customer_id', data2.index)
 
-# 50.000 gözlem örneklem alma
 if len(data2) > 50000:
     data = data2.sample(n=50000, random_state=42).copy()
 else:
@@ -60,13 +55,11 @@ else:
 if 'customer_id' not in data.columns:
     data.insert(0, 'customer_id', data.index)
 
-# Sütun adını uyumlu hale getir
 if "fraud_bool" in data.columns and "fraud" not in data.columns:
     data = data.rename(columns={"fraud_bool": "fraud"})
 if "fraud_bool" in data2.columns and "fraud" not in data2.columns:
     data2 = data2.rename(columns={"fraud_bool": "fraud"})
 
-# Preprocessing fonksiyonu
 def preprocess_data(df):
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
     categorical_cols = df.select_dtypes(include='object').columns
@@ -89,12 +82,12 @@ X = data_imputed.drop("fraud", axis=1)
 y = data_imputed["fraud"]
 numeric_data = data.select_dtypes(include=[np.number])
 
-if page == "Home":
+if page == "Ana Sayfa":
     st.markdown("""
     <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="flex:1">
             <h1 style="color:#095484;font-weight:bold;">
-                🏦 Makine Öğrenimi ile Sahtecilik Tespiti (Fraud Detection)
+                🏦 Banka Dolandırıcılık Tespiti (Fraud Detection)
             </h1>
             <div style="font-size:18px;">
                 <b>
@@ -110,7 +103,7 @@ if page == "Home":
             </div>
         </div>
         <div style="flex:1;display:flex;justify-content:center;">
-            <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/app_images/fraud_detection.png?raw=true" alt="Fraud Detection" style="width:300px;height:300px;">
+            <img src="https://github.com/onurkrsrml/miuul_final_project/blob/main/app_images/fraud_detection.png?raw=true" alt="Fraud Detection" style="width:500px;height:300px;">
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -135,39 +128,33 @@ if page == "Home":
         "Geri bildirimleriniz ve katkılarınız için GitHub üzerinden iletişime geçebilirsiniz."
     )
 
-elif page == "Data Exploration":
-    st.title("Data Exploration")
-    st.subheader("Raw Data")
-    with st.expander("Show raw data"):
+elif page == "Veri Önizleme":
+    st.title("Veri Önizleme")
+    st.subheader("Veri Seti Özet")
+    with st.expander("Veri Seti Özeti Göster"):
         st.write(data.head())
         st.write(f"Shape: {data.shape}")
-    st.subheader("Distribution of Class Labels")
+    st.subheader("Class Etiketlerinin Dağıtımı")
     st.write(data["fraud"].value_counts())
     fig1, ax1 = plt.subplots()
     sns.countplot(x="fraud", data=data, ax=ax1)
-    ax1.set_title("Fraud Distribution")
+    ax1.set_title("Dolandırıcılık Dağılımı")
     st.pyplot(fig1)
 
-    st.subheader("Correlation Heatmap")
+    st.subheader("Korelasyon Isı Haritası")
     fig2, ax2 = plt.subplots(figsize=(10, 8))
-    if len(numeric_data.columns) > 1:
-        corr = numeric_data.corr()
-        sns.heatmap(corr, annot=False, cmap="viridis", ax=ax2)
-    else:
-        ax2.text(0.5, 0.5, "Yeterli sayısal sütun yok!", ha='center', va='center')
+    corr = numeric_data.corr()
     st.pyplot(fig2)
 
-    st.subheader("Feature Correlations with Fraud/Not-Fraud")
-    if "fraud" in numeric_data.columns and len(numeric_data.columns) > 1:
-        corr2 = numeric_data.corr()["fraud"].drop("fraud").sort_values(ascending=False)
-        fig3, ax3 = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=corr2.values, y=corr2.index, palette='coolwarm', ax=ax3)
-        st.pyplot(fig3)
-    else:
-        st.info("Yeterli sayısal sütun yok.")
+    st.subheader("Fraud/Normal Özellik Korelasyonları")
 
-elif page == "Model Training":
-    st.title("Model Training")
+    corr2 = numeric_data.corr()["fraud"].drop("fraud").sort_values(ascending=False)
+    fig3, ax3 = plt.subplots(figsize=(10, 6))
+    sns.barplot(x=corr2.values, y=corr2.index, palette='coolwarm', ax=ax3)
+    st.pyplot(fig3)
+
+elif page == "Model Eğitimi":
+    st.title("Model Eğitimi")
     st.write(
         "Aşağıda dilediğiniz modelleri seçip hiperparametrelerini ayarlayabilir, ardından sonuçları karşılaştırabilirsiniz.")
 
@@ -309,8 +296,8 @@ elif page == "Model Training":
             ax.set_title("Random Forest - En Önemli 10 Özellik")
             st.pyplot(fig)
 
-elif page == "Fraud Detector":
-    st.title("Fraud Detector")
+elif page == "Fraud Tespiti":
+    st.title("Fraud Tespiti")
     st.write("Aşağıdaki form ile işlem bilgilerini girip, işlemin sahte olup olmadığını kontrol edebilirsiniz.")
     input_columns = list(X.columns)
     inputs = []
@@ -328,7 +315,7 @@ elif page == "Fraud Detector":
                 else:
                     val = 0
             inputs.append(val)
-        submit_button = st.form_submit_button(label="Check your Transaction")
+        submit_button = st.form_submit_button(label="İşlemi Kontrol Et")
 
     if submit_button:
         try:
@@ -346,7 +333,7 @@ elif page == "Fraud Detector":
         input_scaled = scaler.transform(input_array)
         prediction = rf.predict(input_scaled)
         color = "red" if prediction[0] == 1 else "green"
-        result_text = "Fraudulent" if prediction[0] == 1 else "Not Fraudulent"
+        result_text = "Fraud" if prediction[0] == 1 else "Fraud Değil"
         st.markdown(f"<h3 style='color: {color};'>{result_text}</h3>", unsafe_allow_html=True)
 
 elif page == "Müşteri Kontrolü":
@@ -358,9 +345,8 @@ elif page == "Müşteri Kontrolü":
     if "customer_id" not in data2.columns:
         st.warning("Veri setinizde 'customer_id' kolonu yok. Bu özelliği kullanmak için müşteri ID'li veri gerekir.")
     else:
-        # Örneklemdeki müşteri ID'leri (string olarak)
         sample_customer_ids = list(map(str, data["customer_id"].astype(str).unique()))
-        # Rastgele 1000 müşteri ID'si
+
         if len(sample_customer_ids) > 1000:
             random_sample_ids = list(np.random.choice(sample_customer_ids, 1000, replace=False))
         else:
@@ -369,7 +355,6 @@ elif page == "Müşteri Kontrolü":
         selected_id_from_list = st.selectbox("Hızlı Seçim (1000 rastgele müşteri ID'si):", random_sample_ids, key="customer_id_selectbox")
         manual_id = st.text_input("Veya müşteri ID'si giriniz:", value="", key="customer_id_textinput")
 
-        # Kullanıcı manuel giriş yaptıysa onu, yoksa listedekini kullan
         if manual_id.strip() != "":
             selected_id = manual_id.strip()
         else:
@@ -379,14 +364,14 @@ elif page == "Müşteri Kontrolü":
             st.error("Girilen müşteri ID'si 50.000 gözlemden oluşan örneklemde yok. Lütfen farklı kullanıcı arayın.")
         else:
             customer_rows = data2[data2["customer_id"].astype(str) == selected_id]
-            st.write(f"Seçilen müşteri: **{selected_id}**")
-            st.write("İşlem detayları:")
+            st.write(f"Seçilen Müşteri: **{selected_id}**")
+            st.write("İşlem Detayları:")
             st.dataframe(customer_rows.head())
 
-            # Model eğitimi ve tahmini
             smote = SMOTE(random_state=42)
             X_resampled, y_resampled = smote.fit_resample(X, y)
             X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
+
             scaler = StandardScaler()
             X_train_scaled = scaler.fit_transform(X_train)
             rf = RandomForestClassifier(n_estimators=20, max_depth=3, random_state=42, n_jobs=-1)
@@ -405,20 +390,15 @@ elif page == "Müşteri Kontrolü":
             else:
                 st.success("Bu müşterinin işlemlerinde dolandırıcılık tespit EDİLMEDİ.")
 
-
-
-            # Etiketli tablo oluştur (FRAUD/NOT FRAUD)
             etiketler = np.where(preds == 1,
                                  '<span style="color:red;font-weight:bold;">FRAUD</span>',
                                  '<span style="color:green;font-weight:bold;">NOT FRAUD</span>')
+
             kontrol_df = customer_rows.copy()
             kontrol_df.insert(0, "Durum", etiketler)
 
-
-            # Session state'e ekle
             st.session_state.kontrol_listesi.append(kontrol_df)
 
-    # Tüm kontrol edilen işlemleri tablo olarak göster
     if st.session_state.kontrol_listesi:
         st.markdown("### Tüm Kontrol Edilen İşlemler")
         tum_kontrol_df = pd.concat(st.session_state.kontrol_listesi, ignore_index=True)

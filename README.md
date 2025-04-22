@@ -1,4 +1,4 @@
-# 🏦 Makine Öğrenimi ile Sahtecilik Tespiti (Fraud Detection)
+# 🏦 Banka Dolandırıcılık Tespiti (Fraud Detection)
 
 Bu proje, makine öğrenimi teknikleri kullanarak finansal işlemlerde sahtecilik tespiti yapmayı amaçlar. Proje, Python ile geliştirilmiş olup veri ön işleme, modelleme ve performans değerlendirme adımlarını içermektedir. Ayrıca, interaktif bir arayüz ile kullanıcıların kendi verileri üzerinde analiz yapabilmelerine olanak tanıyan bir **Streamlit** uygulaması da sunulmaktadır.
 
@@ -10,6 +10,14 @@ Bu proje, makine öğrenimi teknikleri kullanarak finansal işlemlerde sahtecili
 - **Temel Dosyalar:**
   - `main.py`: Veri işleme, model eğitim ve değerlendirme süreçlerini komut satırında çalıştırır.
   - `streamlit_app.py`: Kullanıcıların kendi verileriyle interaktif analiz yapmasını sağlayan web arayüzünü sunar.
+
+---
+
+## 👨🏻‍💻 Geliştiriciler
+
+- Onur KARASÜRMELİ [LinkedIn](https://www.linkedin.com/in/onurkarasurmeli/)
+- Kemal BAL [LinkedIn](https://www.linkedin.com/in/kemal-bal-/)
+- Zeynep YERLİKAYA [LinkedIn](https://www.linkedin.com/in/zeynepyrlkyy123/)
 
 ---
 
@@ -66,6 +74,7 @@ python main.py
 ### 2. Web Arayüzü (streamlit_app.py)
 
 Kendi veri setinizi yükleyerek, özellik ve model seçimi yapabilir, sonuçları anlık olarak görebilirsiniz.
+Buradan [Streamlit Uygulamasını](https://miuul-final-project-fraud-detection.streamlit.app/) deneyebilirsiniz.
 
 ```bash
 streamlit run streamlit_app.py
@@ -104,7 +113,8 @@ streamlit run streamlit_app.py
 - imbalanced-learn (SMOTE)
 - xgboost, lightgbm
 - streamlit (web arayüzü)
-- joblib (model kaydetme)
+- scipy (istatistiksel hesaplamalar)
+- counter (etiket sayımı)
 
 ---
 

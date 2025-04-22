@@ -2,10 +2,10 @@ streamlit
 numpy
 pandas
 seaborn
-missingno
 scikit-learn
 lightgbm
 xgboost
 matplotlib
 imbalanced-learn
-
+scipy
+counter
