@@ -134,7 +134,7 @@ elif page == "Veri Önizleme":
     with st.expander("Veri Seti Özeti Göster"):
         st.write(data.head())
         st.write(f"Shape: {data.shape}")
-    st.subheader("Class Etiketlerinin Dağıtımı")
+    st.subheader("Hedef Değişken Dağılımı")
     st.write(data["fraud"].value_counts())
     fig1, ax1 = plt.subplots()
     sns.countplot(x="fraud", data=data, ax=ax1)
@@ -143,15 +143,19 @@ elif page == "Veri Önizleme":
 
     st.subheader("Korelasyon Isı Haritası")
     fig2, ax2 = plt.subplots(figsize=(10, 8))
-    corr = numeric_data.corr()
+
+    if len(numeric_data.columns) > 1:
+         corr = numeric_data.corr()
+         sns.heatmap(corr, annot=False, cmap="viridis", ax=ax2)
     st.pyplot(fig2)
 
     st.subheader("Fraud/Normal Özellik Korelasyonları")
 
-    corr2 = numeric_data.corr()["fraud"].drop("fraud").sort_values(ascending=False)
-    fig3, ax3 = plt.subplots(figsize=(10, 6))
-    sns.barplot(x=corr2.values, y=corr2.index, palette='coolwarm', ax=ax3)
-    st.pyplot(fig3)
+    if "fraud" in numeric_data.columns and len(numeric_data.columns) > 1:
+         corr2 = numeric_data.corr()["fraud"].drop("fraud").sort_values(ascending=False)
+         fig3, ax3 = plt.subplots(figsize=(10, 6))
+         sns.barplot(x=corr2.values, y=corr2.index, palette='coolwarm', ax=ax3)
+         st.pyplot(fig3)
 
 elif page == "Model Eğitimi":
     st.title("Model Eğitimi")
@@ -333,7 +337,7 @@ elif page == "Fraud Tespiti":
         input_scaled = scaler.transform(input_array)
         prediction = rf.predict(input_scaled)
         color = "red" if prediction[0] == 1 else "green"
-        result_text = "Fraud" if prediction[0] == 1 else "Fraud Değil"
+        result_text = "Fraud" if prediction[0] == 1 else " Not Fraud"
         st.markdown(f"<h3 style='color: {color};'>{result_text}</h3>", unsafe_allow_html=True)
 
 elif page == "Müşteri Kontrolü":
